@@ -17,4 +17,8 @@
     <Folder Include="Controllers\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\UCMS.ServiceDefaults\UCMS.ServiceDefaults.csproj" />
+  </ItemGroup>
+
 </Project>

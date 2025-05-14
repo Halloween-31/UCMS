@@ -11,4 +11,14 @@ builder.AddProject<Projects.UCMS_Web>("webfrontend")
     .WithReference(apiService)
     .WaitFor(apiService);
 
+var dataService = builder.AddProject<Projects.UCMS_DataService>("dataService")
+    .WithExternalHttpEndpoints();
+
+builder.AddNpmApp("frontendreactvite", "../UCMS.FrontendReactVite")
+    .WithReference(dataService)
+    .WithEnvironment("BROWSER", "none")
+    .WithHttpEndpoint(env: "VITE_PORT")
+    .WithExternalHttpEndpoints()
+    .PublishAsDockerFile();
+
 builder.Build().Run();

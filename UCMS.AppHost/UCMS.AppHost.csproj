@@ -14,11 +14,13 @@
   <ItemGroup>
     <ProjectReference Include="..\UCMS.ApiService\UCMS.ApiService.csproj" />
     <ProjectReference Include="..\UCMS.Web\UCMS.Web.csproj" />
+    <ProjectReference Include="..\UCMS.DataService\UCMS.DataService.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Aspire.Hosting.AppHost" Version="9.0.0" />
-    <PackageReference Include="Aspire.Hosting.Redis" Version="9.0.0" />
+    <PackageReference Include="Aspire.Hosting.AppHost" Version="9.2.1" />
+    <PackageReference Include="Aspire.Hosting.NodeJs" Version="9.2.1" />
+    <PackageReference Include="Aspire.Hosting.Redis" Version="9.2.1" />
   </ItemGroup>
 
 </Project>

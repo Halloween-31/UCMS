@@ -3,6 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 17.12.35707.178
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UCMS.AppHost", "UCMS.AppHost\UCMS.AppHost.csproj", "{DC69E210-6699-4BA5-8B4A-DE0EBD9E0968}"
+	ProjectSection(ProjectDependencies) = postProject
+		{8BE63E93-4C71-4D08-90E2-E0AD2F934813} = {8BE63E93-4C71-4D08-90E2-E0AD2F934813}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UCMS.ServiceDefaults", "UCMS.ServiceDefaults\UCMS.ServiceDefaults.csproj", "{04C6154A-E498-4A8A-B84F-6A417BC38D8F}"
 EndProject
