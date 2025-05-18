@@ -1,6 +1,43 @@
 @UCMS.DataService_HostAddress = http://localhost:5130
 
-GET {{UCMS.DataService_HostAddress}}/weatherforecast/
+### UserController
+
+GET {{UCMS.DataService_HostAddress}}/user
+Accept: application/json
+
+###
+
+POST {{UCMS.DataService_HostAddress}}/user
+Content-Type: application/json
+Accept-Language: en-US
+{
+    "name": "Test1",
+    "email": "Test1",
+    "login": "Test1",
+    "password": "Test1"
+}
+
+###
+
+GET {{UCMS.DataService_HostAddress}}/user/5
+Accept: application/json
+
+### 
+
+PUT {{UCMS.DataService_HostAddress}}/user/5
+Content-Type: application/json
+Accept-Language: en-US
+{
+  "userId": "5",
+  "name": "Test5Test2",
+  "email": "Test5",
+  "login": "Test5",
+  "password": "Test5"
+}
+
+###
+
+DELETE {{UCMS.DataService_HostAddress}}/user/4
 Accept: application/json
 
 ###

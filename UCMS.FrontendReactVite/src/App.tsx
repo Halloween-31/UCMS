@@ -4,21 +4,21 @@ import viteLogo from '/vite.svg'
 import './App.css'
 
 function App() {
-  const [forecasts, setForecasts] = useState<Array<any>>([]);
+  const [user, setUser] = useState<Array<any>>([]);
 
-  const requestWeather = async () => {
-    const weather = await fetch("api/weatherforecast");
-    console.log(weather);
+  const requestUser = async () => {
+    const user = await fetch("api/user");
+    console.log('user after request', user);
 
-    const weatherJson = await weather.json();
-    console.log(weatherJson);
+    const userJson = await user.json();
+    console.log('userJson', userJson);
 
-    setForecasts(weatherJson);
+    setUser(userJson);
   };
 
   useEffect(() => {
-    requestWeather();
-    console.log('forecasts', forecasts);
+    requestUser();
+    console.log('user', user);
   }, []);
 
 
