@@ -13,5 +13,7 @@ namespace UCMS.Models.DbModels
         public string Email { get; set; } = string.Empty;
         public string Login {  get; set; } = string.Empty;
         public string Password { get; set; } = string.Empty;
+
+        public ICollection<Site> Sites { get; set; } = new List<Site>();
     }
 }
