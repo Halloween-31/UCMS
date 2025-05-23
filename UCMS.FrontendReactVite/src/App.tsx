@@ -1,32 +1,50 @@
-import { useEffect, useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import './App.css'
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import CMSLayout from './components/uCMSLayout';
+import Login from './pages/login/Login';
+import About from './pages/about/About';
+import React from 'react';
+import Sites from './pages/sites/Sites';
 
 function App() {
-  const [user, setUser] = useState<Array<any>>([]);
-
-  const requestUser = async () => {
-    const user = await fetch("api/user");
-    console.log('user after request', user);
-
-    const userJson = await user.json();
-    console.log('userJson', userJson);
-
-    setUser(userJson);
-  };
-
-  useEffect(() => {
-    requestUser();
-    console.log('user', user);
-  }, []);
-
-
-
-  const [count, setCount] = useState(0)
-
   return (
-    <>
+    <React.StrictMode>
+      <BrowserRouter>
+        <Routes>
+          <Route path='' element={<CMSLayout />}>
+              <Route index element={<Login />} />
+          </Route>
+          <Route path='sites' element={<Sites />} />
+          <Route path="about" element={<About />} />
+        </Routes>
+      </BrowserRouter>
+    </React.StrictMode>
+  )
+}
+
+export default App
+
+
+
+
+
+
+
+
+
+
+/*
+import reactLogo from './assets/react.svg'
+import viteLogo from '/vite.svg'
+*/
+
+
+
+
+
+
+/*
+      
       <div>
         <a href="https://vite.dev" target="_blank">
           <img src={viteLogo} className="logo" alt="Vite logo" />
@@ -47,8 +65,35 @@ function App() {
       <p className="read-the-docs">
         Click on the Vite and React logos to learn more
       </p>
-    </>
-  )
-}
+ 
 
-export default App
+
+
+
+
+
+
+
+
+
+
+      <Router>
+        <Routes>
+          <Route path="/" element={<CMSLayout />}>
+            <Route index element={<Login />} />
+            <Route path="content" element={<Content />}>
+              <Route path="" element={<ContentMain />}></Route>
+            </Route>
+            <Route path="media" element={<Media />}>
+              <Route path="" element={<MediaContent />}></Route>
+            </Route>
+            <Route path="settings" element={<Settings />}>
+              <Route path="" element={<SettingsContent />}></Route>
+            </Route>
+          </Route>
+        </Routes>
+      </Router>
+
+
+
+*/
