@@ -4,7 +4,7 @@ import { UserDefaultState, type User } from "../../models/User";
 import { nameof } from "../../common/nameof";
 import axios from "axios";
 
-const Login : React.FC = () => {
+const Register : React.FC = () => {
     const navigate = useNavigate();
 
     const [user, setUser] = useState<User>(UserDefaultState);
@@ -17,26 +17,17 @@ const Login : React.FC = () => {
         });
     };
 
-    const signIn = async (e : React.MouseEvent<HTMLButtonElement>) => {
+    const signUp = async (e : React.MouseEvent<HTMLButtonElement>) => {
         e.preventDefault();
 
         try {
-          const response = await axios.post(`api/user/login`, {
-            login : user.login,
-            password: user.password,
-          });
-          console.log('Logined user:', response.data);
-          console.log('User:', (response.data as User));
-          console.log('UserId:', (response.data as User).userId);
-          navigate(`/sites?userId=${(response.data as User).userId}`);
+            const response = await axios.post<User>('api/user', user);
+            console.log('Registered:', response.data);
+            navigate('/');
         } catch (error) {
-            console.error("Can't find user", error);
+            console.error('Registration error:', error);
             setDisplayErrorMessage(true);
         }
-    };
-
-    const signUp = (_ : React.MouseEvent<HTMLButtonElement>) => {
-      navigate('/register');
     };
 
     return (
@@ -47,10 +38,40 @@ const Login : React.FC = () => {
             {displayErrorMessage && (
                 <div>
                     <label className="block bg-red-500 text-white text-center font-semibold mb-2 shadow-lg">
-                        The login or the password is incorrect!
+                        Registration failed!
                     </label>
                 </div>
             )}
+
+            <div>
+              <label className="block text-black font-semibold mb-2">
+                <span className="text-red-500 mr-1">*</span>
+                Enter your name
+              </label>
+              <input
+                name={nameof<User>('name')}
+                type="text"
+                className="w-full p-3 bg-gray-100 rounded focus:outline-none"
+                placeholder="Your name"
+                onChange={(e) => setUserProperty(e) }
+                value={user?.name}
+              />
+            </div>
+
+            <div>
+              <label className="block text-black font-semibold mb-2">
+                <span className="text-red-500 mr-1">*</span>
+                Enter your email
+              </label>
+              <input
+                name={nameof<User>('email')}
+                type="email"
+                className="w-full p-3 bg-gray-100 rounded focus:outline-none"
+                placeholder="Your login"
+                onChange={(e) => setUserProperty(e)}
+                value={user.email}
+              />
+            </div>
 
             <div>
               <label className="block text-black font-semibold mb-2">
@@ -82,14 +103,7 @@ const Login : React.FC = () => {
               />
             </div>
   
-            <div className="flex justify-around pt-4">
-              <button
-                type="submit"
-                className="bg-gray-200 px-6 py-2 rounded text-black hover:bg-gray-300 transition"
-                onClick={signIn}
-              >
-                Sign in
-              </button>
+            <div className="flex justify-center pt-4">
               <button
                 type="submit"
                 className="bg-gray-200 px-6 py-2 rounded text-black hover:bg-gray-300 transition"
@@ -104,4 +118,4 @@ const Login : React.FC = () => {
     );
 };
 
-export default Login;
+export default Register;

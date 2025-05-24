@@ -5,6 +5,8 @@ import Login from './pages/login/Login';
 import About from './pages/about/About';
 import React from 'react';
 import Sites from './pages/sites/Sites';
+import Register from './pages/login/Register';
+import Site from './pages/sites/site/Site';
 
 function App() {
   return (
@@ -13,8 +15,10 @@ function App() {
         <Routes>
           <Route path='' element={<CMSLayout />}>
               <Route index element={<Login />} />
+              <Route path='register' element={<Register />} />
           </Route>
           <Route path='sites' element={<Sites />} />
+          <Route path='site' element={<Site />} />
           <Route path="about" element={<About />} />
         </Routes>
       </BrowserRouter>

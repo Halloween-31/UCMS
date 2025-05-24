@@ -1,16 +1,9 @@
 import React, { useState, useEffect, useRef, type ReactNode } from 'react';
+import type { Site } from '../../models/Site';
+import axios from 'axios';
+import { Navigate, useNavigate, useSearchParams, type NavigateFunction } from 'react-router-dom';
 
 // --- Type Definitions ---
-
-interface Site {
-    id: number;
-    title: string;
-    domain: string;
-    status: "Published" | "Draft" | "Review" | string; // Allow other strings for flexibility
-    lastUpdated: string;
-    imageUrl: string | null;
-    imageAlt: string;
-}
 
 interface IconProps {
     classes: string;
@@ -47,7 +40,7 @@ interface SiteCardProps {
 const Icon: React.FC<IconProps> = ({ classes, title }) => <i className={classes} title={title}></i>;
 
 // --- Data ---
-const initialSitesData: Site[] = [
+/*const initialSitesData: Site[] = [
     {
         id: 1,
         title: "My Travel Blog",
@@ -84,7 +77,7 @@ const initialSitesData: Site[] = [
         imageUrl: "https://placehold.co/600x400/86EFAC/166534?text=Portfolio",
         imageAlt: "Site Screenshot - Portfolio Showcase"
     },
-];
+];*/
 
 // --- Helper Components ---
 
@@ -242,15 +235,33 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen }) => {
     );
 };
 
+// Create new site function
+const createNewSite = (e : React.MouseEvent<HTMLButtonElement>, 
+    userId: number,
+    navigate: NavigateFunction,
+) => {
+    e.preventDefault();
+    navigate(`/site?userId=${userId}&siteId=-1`)
+};
+
+
 // PageHeader Component
-const PageHeader: React.FC = () => {
+type PageHeaderProps = {
+    userId: number,
+}
+
+const PageHeader: React.FC<PageHeaderProps> = (props: PageHeaderProps) => {
+    const navigate = useNavigate();
+
     return (
         <header className="bg-white shadow-md">
             <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row justify-between items-center space-y-3 sm:space-y-0">
                 <h1 className="text-3xl font-bold text-gray-900">
                     Your Websites
                 </h1>
-                <Button variant="primary" size="medium">
+                <Button variant="primary" size="medium"
+                    onClick={(e) => createNewSite(e, props.userId, navigate) }
+                >
                     <Icon classes="fas fa-plus mr-2" /> Create New Site
                 </Button>
             </div>
@@ -330,7 +341,7 @@ const Footer: React.FC = () => {
     return (
         <footer className="bg-white border-t border-gray-200 mt-auto">
             <div className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8 text-center">
-                <p className="text-gray-500 text-sm">&copy; {new Date().getFullYear()} MyCMS. All Rights Reserved. Built with <Icon classes="fas fa-heart text-red-500" />.</p>
+                <p className="text-gray-500 text-sm">&copy; {new Date().getFullYear()} UCMS. All Rights Reserved. Built with <Icon classes="fas fa-heart text-red-500" />.</p>
             </div>
         </footer>
     );
@@ -338,7 +349,7 @@ const Footer: React.FC = () => {
 
 // Main App Component
 const Sites: React.FC = () => {
-    const [sites, _] = useState<Site[]>(initialSitesData);
+    const [sites, setSites] = useState<Site[]>([]); //initialSitesData
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
     const [isUserMenuOpen, setIsUserMenuOpen] = useState<boolean>(false);
     
@@ -349,6 +360,22 @@ const Sites: React.FC = () => {
     const toggleUserMenu = (explicitState?: boolean) => {
         setIsUserMenuOpen(prev => typeof explicitState === 'boolean' ? explicitState : !prev);
     };
+
+    const [searchParams] = useSearchParams();
+    const userId = searchParams.get("userId");
+
+    if (!userId) {
+        return <Navigate to="/" replace />;
+    }
+
+    useEffect(() => {
+        axios.get<Site[]>(`api/site/ByUserId?userId=${userId}`)
+            .then((response) => {
+                console.log('Sites:', response.data);
+                setSites(response.data);
+            })
+            .catch(error => console.error(error));
+    }, []);
     
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -389,7 +416,7 @@ const Sites: React.FC = () => {
                 <MobileMenu isOpen={isMobileMenuOpen} />
             </div>
             
-            <PageHeader />
+            <PageHeader userId={Number.parseInt(userId)} />
 
             <main className="flex-grow">
                 <div className="max-w-7xl mx-auto py-8 sm:px-6 lg:px-8">
@@ -419,6 +446,13 @@ const Sites: React.FC = () => {
 }
 
 export default Sites;
+
+
+
+
+
+
+
 
 // To make this runnable, you would typically have an index.tsx like this:
 // import React from 'react';
