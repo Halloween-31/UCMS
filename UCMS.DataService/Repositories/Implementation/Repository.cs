@@ -7,8 +7,8 @@ namespace UCMS.DataService.Repositories.Implementation
 {
     public class Repository<T> : IRepository<T> where T : class
     {
-        private readonly UCMSDbContext _context;
-        private readonly DbSet<T> _dbSet;
+        protected readonly UCMSDbContext _context;
+        protected readonly DbSet<T> _dbSet;
 
         public Repository(UCMSDbContext context)
         {

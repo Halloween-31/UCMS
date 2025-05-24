@@ -1,6 +1,8 @@
 ﻿using System.Reflection;
 using UCMS.DataService.Repositories.Implementation;
 using UCMS.DataService.Repositories.Interface;
+using UCMS.DataService.Repositories.ModelRepository;
+using UCMS.DataService.Repositories.Partial;
 using UCMS.Models.DbModels;
 
 namespace UCMS.DataService.Extenstions
@@ -29,6 +31,15 @@ namespace UCMS.DataService.Extenstions
                 // {
                 //     services.AddScoped<IUserRepository, UserRepository>();
                 // }
+
+                if (entityType == typeof(User))
+                {
+                     services.AddScoped<IRepository<User>, UserRepository>();
+                }
+                if(entityType == typeof(Site))
+                {
+                    services.AddScoped<IRepository<Site>, SiteRepository>();
+                }
             }
 
             return services;

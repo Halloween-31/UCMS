@@ -1,59 +1,24 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using UCMS.DataService.Controllers.BaseController;
+using UCMS.DataService.DTOs.UserDTOs;
 using UCMS.DataService.Repositories.Interface;
+using UCMS.DataService.Repositories.Partial;
 using UCMS.Models.DbModels;
+using static Grpc.Core.Metadata;
 
 namespace UCMS.DataService.Controllers
 {
     [ApiController]
     [Route("/[controller]")]
-    public class UserController : ControllerBase
+    public class UserController(IRepository<User> repository) : BaseController<User>(repository)
     {
-        private readonly IRepository<User> _repository;
-
-        public UserController(IRepository<User> repository)
+        [HttpPost("login")]
+        public async Task<ActionResult<User>> Login([FromBody] LoginUserDTO loginUser)
         {
-            _repository = repository;
-        }
-
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<User>>> GetAll()
-        {
-            var entities = await _repository.GetAllAsync();
-            return Ok(entities);
-        }
-
-        [HttpGet("{id}")]
-        public async Task<ActionResult<User>> GetById(int id)
-        {
-            var entity = await _repository.GetByIdAsync(id);
+            var entity = await (_repository as UserRepository)!.GetByLoginAndPassword(loginUser.Login, loginUser.Password);
             if (entity == null)
                 return NotFound();
             return Ok(entity);
-        }
-
-        [HttpPost]
-        public async Task<ActionResult<User>> Create(User entity)
-        {
-            await _repository.AddAsync(entity);
-            return CreatedAtAction(nameof(GetById), new { id = entity.UserId }, entity);
-        }
-
-        [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, User entity)
-        {
-            // Ensure id matches
-            if (id != entity.UserId)
-                return BadRequest();
-
-            await _repository.UpdateAsync(entity);
-            return NoContent();
-        }
-
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(int id)
-        {
-            await _repository.DeleteAsync(id);
-            return NoContent();
         }
     }
 }
