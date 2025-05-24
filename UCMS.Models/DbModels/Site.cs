@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UCMS.Models.Interface;
+using UCMS.Models.ModelEnums.Site;
 
 namespace UCMS.Models.DbModels
 {
@@ -15,6 +16,10 @@ namespace UCMS.Models.DbModels
         public int SiteId { get; set; }
         public string SiteName { get; set; } = string.Empty;
         public string Domain { get; set; } = string.Empty;
+        public string Status { get; set; } = string.Empty; // SiteStatus
+        public DateTime LastUpdated { get; set; }
+        public string? ImageUrl {  get; set; }
+        public string? ImageAlt { get; set; }
 
         public int UserId { get; set; }
         public User User { get; set; } = null!;

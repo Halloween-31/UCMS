@@ -12,6 +12,7 @@ namespace UCMS.Models.DbModels
         public int Id { get => DocumentTypeId; }
 
         public int DocumentTypeId { get; set; }
+        public string Name { get; set; } = string.Empty;
 
         public int SiteId { get; set; }
         public Site Site { get; set; } = null!;

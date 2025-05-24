@@ -35,6 +35,10 @@ namespace UCMS.DataService.Data
                 entity.Property(e => e.SiteId).HasColumnName(nameof(Site.SiteId));
                 entity.Property(e => e.SiteName);
                 entity.Property(e => e.Domain);
+                entity.Property(e => e.Status);
+                entity.Property(e => e.LastUpdated);
+                entity.Property(e => e.ImageUrl);
+                entity.Property(e => e.ImageAlt);
 
                 entity.HasOne(b => b.User)
                     .WithMany(e => e.Sites)
@@ -47,6 +51,7 @@ namespace UCMS.DataService.Data
                 entity.HasKey(e => e.DocumentTypeId);
 
                 entity.Property(e => e.DocumentTypeId).HasColumnName(nameof(DocumentType.DocumentTypeId));
+                entity.Property(e => e.Name);
 
                 entity.HasOne(e => e.Site)
                     .WithMany(e => e.DocumentTypes)

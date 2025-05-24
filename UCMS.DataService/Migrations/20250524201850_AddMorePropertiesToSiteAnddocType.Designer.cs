@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using UCMS.DataService.Data;
 
@@ -11,9 +12,11 @@ using UCMS.DataService.Data;
 namespace UCMS.DataService.Migrations
 {
     [DbContext(typeof(UCMSDbContext))]
-    partial class UCMSDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250524201850_AddMorePropertiesToSiteAnddocType")]
+    partial class AddMorePropertiesToSiteAnddocType
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
