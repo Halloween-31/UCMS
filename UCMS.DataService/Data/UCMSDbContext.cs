@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Xml.Linq;
+using Microsoft.EntityFrameworkCore;
 using UCMS.Models.DbModels;
 
 // PM> Add-Migration InitialCreate -Project UCMS.DataService -StartupProject UCMS.DataService -Context UCMSDbContext
@@ -36,9 +37,48 @@ namespace UCMS.DataService.Data
                 entity.Property(e => e.Domain);
 
                 entity.HasOne(b => b.User)
-                    .WithMany(a => a.Sites)
+                    .WithMany(e => e.Sites)
                     .HasForeignKey(b => b.UserId)
                     .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            modelBuilder.Entity<DocumentType>(entity =>
+            {
+                entity.HasKey(e => e.DocumentTypeId);
+
+                entity.Property(e => e.DocumentTypeId).HasColumnName(nameof(DocumentType.DocumentTypeId));
+
+                entity.HasOne(e => e.Site)
+                    .WithMany(e => e.DocumentTypes)
+                    .HasForeignKey(e => e.DocumentTypeId)
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            modelBuilder.Entity<Property>(entity =>
+            {
+                entity.HasKey(e => e.PropertyId);
+
+                entity.Property(e => e.PropertyId).HasColumnName(nameof(Property.PropertyId));
+                entity.Property(e => e.PropertyName);
+                entity.Property(e => e.DataType);
+
+                entity.HasOne(e => e.DocumentType)
+                    .WithMany(e => e.Properties)
+                    .HasForeignKey(e => e.DocumentTypeId)
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            modelBuilder.Entity<Content>(entity =>
+            {
+                entity.HasKey(e => e.ContentId);
+
+                entity.Property(e => e.ContentId).HasColumnName(nameof(Content.ContentId));
+                entity.Property(e => e.Value);
+
+                entity.HasOne(e => e.Property)
+                    .WithOne(e => e.Content)
+                    .HasForeignKey<Content>(e => e.PropertyId)
+                    .IsRequired();
             });
 
             base.OnModelCreating(modelBuilder);
