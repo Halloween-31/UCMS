@@ -55,7 +55,7 @@ namespace UCMS.DataService.Data
 
                 entity.HasOne(e => e.Site)
                     .WithMany(e => e.DocumentTypes)
-                    .HasForeignKey(e => e.DocumentTypeId)
+                    .HasForeignKey(e => e.SiteId)
                     .OnDelete(DeleteBehavior.Cascade);
             });
 

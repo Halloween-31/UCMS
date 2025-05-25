@@ -22,7 +22,7 @@ namespace UCMS.DataService.Migrations
                     table.PrimaryKey("PK_DocumentType", x => x.DocumentTypeId);
                     table.ForeignKey(
                         name: "FK_DocumentType_Sites_DocumentTypeId",
-                        column: x => x.DocumentTypeId,
+                        column: x => x.SiteId,
                         principalTable: "Sites",
                         principalColumn: "SiteId",
                         onDelete: ReferentialAction.Cascade);
