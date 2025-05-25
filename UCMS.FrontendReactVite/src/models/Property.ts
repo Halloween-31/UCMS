@@ -1,3 +1,4 @@
+import type { ContentProperty } from "./ContentProperty";
 import type { DocumentType } from "./DocumentType";
 
 export interface Property {
@@ -8,5 +9,5 @@ export interface Property {
     documentTypeId: number,
     documentType: DocumentType | null,
 
-    
+    contentProperties: ContentProperty[],    
 }

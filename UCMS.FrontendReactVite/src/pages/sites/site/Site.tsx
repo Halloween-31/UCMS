@@ -1,8 +1,8 @@
-import React, { useState, useEffect, /*useRef,*/ type ChangeEvent, /*type FormEvent*/ } from 'react';
+import React, { useState, useEffect, /*useRef,*/ /*type ChangeEvent,*/ /*type FormEvent*/ } from 'react';
 import { Navigate, useNavigate, useSearchParams } from 'react-router-dom';
 import axios from 'axios';
 import GlobalHeader from '../header/Header';
-import { SiteDefaultState, type Site } from '../../../models/Site';
+import { makeSiteDependencies, SiteDefaultState, type Site } from '../../../models/Site';
 import Sidebar from '../sidebar/Sidebar';
 
 // --- TypeScript Interfaces ---
@@ -255,73 +255,105 @@ const TabsComponent: React.FC<TabsProps> = ({ activeTab, onTabChange }) => {
 };
 
 interface ContentPanelProps {
-  data: ContentData;
-  onDataChange: (field: keyof ContentData, value: string) => void;
-  onFileChange: (event: ChangeEvent<HTMLInputElement>) => void;
+  site: Site;
 }
-const ContentPanel: React.FC<ContentPanelProps> = ({ data, onDataChange, onFileChange }) => (
-  <div className="space-y-6">
-    <div className="bg-gray-50 p-6 rounded-lg shadow">
-      <h3 className="text-lg font-semibold text-gray-700 mb-1">Header Section</h3>
-      <p className="text-xs text-gray-500 mb-4">Main headline and branding for the page.</p>
-      <div className="space-y-4">
-        <div>
-          <label htmlFor="header-title" className="block text-sm font-medium text-gray-700 mb-1">Page Title / Brand</label>
-          <input type="text" id="header-title" value={data.headerTitle} onChange={(e) => onDataChange('headerTitle', e.target.value)} className="form-input w-full p-2 border rounded-md shadow-sm text-base" />
-        </div>
-      </div>
-    </div>
+const ContentPanel: React.FC<ContentPanelProps> = ({ site }) => {
+  console.log('site', site);
+  //console.log('site.documentTypes[0].contents[0]', site.documentTypes[0].contents[0]);
 
-    <div className="bg-gray-50 p-6 rounded-lg shadow">
-      <h3 className="text-lg font-semibold text-gray-700 mb-1">Main Content</h3>
-      <p className="text-xs text-gray-500 mb-4">Primary content of the page.</p>
-      <div className="space-y-4">
-        <div>
-          <label htmlFor="main-headline" className="block text-sm font-medium text-gray-700 mb-1">Main Headline</label>
-          <input type="text" id="main-headline" value={data.mainHeadline} onChange={(e) => onDataChange('mainHeadline', e.target.value)} className="form-input w-full p-2 border rounded-md shadow-sm text-base" />
-        </div>
-        <div>
-          <label htmlFor="subtitle" className="block text-sm font-medium text-gray-700 mb-1">Subtitle</label>
-          <textarea id="subtitle" rows={3} value={data.subtitle} onChange={(e) => onDataChange('subtitle', e.target.value)} className="form-textarea w-full p-2 border rounded-md shadow-sm text-base"></textarea>
-        </div>
-        <div>
-          <label htmlFor="body-text" className="block text-sm font-medium text-gray-700 mb-1">Body Content (Rich Text)</label>
-          <div className="w-full p-2 border border-gray-300 rounded-md shadow-sm bg-white min-h-[150px]">
-            {/* In a real app, use a rich text editor component here and bind its value to data.bodyText */}
-            <div className="text-gray-400 p-4" dangerouslySetInnerHTML={{ __html: data.bodyText }}></div>
+  if (site.siteId === 0) {
+    return (<div></div>);
+  }
+
+  console.log('site.documentTypes[0].contents[0].contentProperties', site.documentTypes[0].contents[0].contentProperties);
+  console.log('site.documentTypes[0].contents[0].contentProperties[0].property', site.documentTypes[0].contents[0].contentProperties[0].property);
+  return (
+    <div className="space-y-6">
+      {/* Header section */
+        /*
+        <div className="bg-gray-50 p-6 rounded-lg shadow">
+          <h3 className="text-lg font-semibold text-gray-700 mb-1">Header Section</h3>
+          <p className="text-xs text-gray-500 mb-4">Main headline and branding for the page.</p>
+          <div className="space-y-4">
+            <div>
+              <label htmlFor="header-title" className="block text-sm font-medium text-gray-700 mb-1">Page Title / Brand</label>
+              <input type="text" id="header-title" value={data.headerTitle} onChange={(e) => onDataChange('headerTitle', e.target.value)} className="form-input w-full p-2 border rounded-md shadow-sm text-base" />
+            </div>
           </div>
         </div>
-        <div>
-          <label htmlFor="cta-button" className="block text-sm font-medium text-gray-700 mb-1">Call to Action Button Text</label>
-          <input type="text" id="cta-button" value={data.ctaButton} onChange={(e) => onDataChange('ctaButton', e.target.value)} className="form-input w-full p-2 border rounded-md shadow-sm text-base" />
-        </div>
-      </div>
-    </div>
+        */
+      }
 
-    <div className="bg-gray-50 p-6 rounded-lg shadow">
-      <h3 className="text-lg font-semibold text-gray-700 mb-1">Image Section</h3>
-      <p className="text-xs text-gray-500 mb-4">Featured image for this page.</p>
-      <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
-        <div className="space-y-1 text-center">
-          <Icon iconClass="fas fa-image fa-3x" className="text-gray-400 mx-auto" />
-          <div className="flex text-sm text-gray-600">
-            <label htmlFor="file-upload" className="relative cursor-pointer bg-white rounded-md font-medium text-indigo-600 hover:text-indigo-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500">
-              <span>Upload a file</span>
-              <input id="file-upload" name="file-upload" type="file" className="sr-only" onChange={onFileChange} />
-            </label>
-            <p className="pl-1">or drag and drop</p>
-          </div>
-          <p className="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
+
+      <div className="bg-gray-50 p-6 rounded-lg shadow">
+        <h3 className="text-lg font-semibold text-gray-700 mb-1">Main Content</h3>
+        <p className="text-xs text-gray-500 mb-4">Primary content of the page.</p>
+        <div className="space-y-4">
+          {site.documentTypes[0].contents[0].contentProperties.map((contentProperty, index) => (
+            <div key={index}>
+              {/* contentProperty.property.propertyName */}
+              <label htmlFor="main-headline" className="block text-sm font-medium text-gray-700 mb-1">
+                {site.documentTypes[0].properties.find(p => p.propertyId == contentProperty.propertyId)?.propertyName}
+              </label>
+              <input type="text" id="main-headline" value={contentProperty.value} 
+                className="form-input w-full p-2 border rounded-md shadow-sm text-base" />
+            </div>
+          ))}
+          {/* old main section */
+            /*
+            <div>
+              <label htmlFor="main-headline" className="block text-sm font-medium text-gray-700 mb-1">Main Headline</label>
+              <input type="text" id="main-headline" value={data.mainHeadline} onChange={(e) => onDataChange('mainHeadline', e.target.value)} className="form-input w-full p-2 border rounded-md shadow-sm text-base" />
+            </div>
+            <div>
+              <label htmlFor="subtitle" className="block text-sm font-medium text-gray-700 mb-1">Subtitle</label>
+              <textarea id="subtitle" rows={3} value={data.subtitle} onChange={(e) => onDataChange('subtitle', e.target.value)} className="form-textarea w-full p-2 border rounded-md shadow-sm text-base"></textarea>
+            </div>
+            <div>
+              <label htmlFor="body-text" className="block text-sm font-medium text-gray-700 mb-1">Body Content (Rich Text)</label>
+              <div className="w-full p-2 border border-gray-300 rounded-md shadow-sm bg-white min-h-[150px]">
+                {// In a real app, use a rich text editor component here and bind its value to data.bodyText }
+                <div className="text-gray-400 p-4" dangerouslySetInnerHTML={{ __html: data.bodyText }}></div>
+              </div>
+            </div>
+            <div>
+              <label htmlFor="cta-button" className="block text-sm font-medium text-gray-700 mb-1">Call to Action Button Text</label>
+              <input type="text" id="cta-button" value={data.ctaButton} onChange={(e) => onDataChange('ctaButton', e.target.value)} className="form-input w-full p-2 border rounded-md shadow-sm text-base" />
+            </div>
+            */
+          }
         </div>
       </div>
-      {data.currentImageUrl && (
-        <div className="mt-4">
-          <img src={data.currentImageUrl} alt="Current Page Image" className="rounded-md shadow-sm max-h-48 mx-auto" onError={(e: React.SyntheticEvent<HTMLImageElement, Event>) => { e.currentTarget.src = 'https://placehold.co/300x150/CCCCCC/999999?text=No+Image'; e.currentTarget.onerror = null; }} />
+
+      {/* Image section */
+        /*
+        <div className="bg-gray-50 p-6 rounded-lg shadow">
+          <h3 className="text-lg font-semibold text-gray-700 mb-1">Image Section</h3>
+          <p className="text-xs text-gray-500 mb-4">Featured image for this page.</p>
+          <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
+            <div className="space-y-1 text-center">
+              <Icon iconClass="fas fa-image fa-3x" className="text-gray-400 mx-auto" />
+              <div className="flex text-sm text-gray-600">
+                <label htmlFor="file-upload" className="relative cursor-pointer bg-white rounded-md font-medium text-indigo-600 hover:text-indigo-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500">
+                  <span>Upload a file</span>
+                  <input id="file-upload" name="file-upload" type="file" className="sr-only" onChange={onFileChange} />
+                </label>
+                <p className="pl-1">or drag and drop</p>
+              </div>
+              <p className="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
+            </div>
+          </div>
+          {data.currentImageUrl && (
+            <div className="mt-4">
+              <img src={data.currentImageUrl} alt="Current Page Image" className="rounded-md shadow-sm max-h-48 mx-auto" onError={(e: React.SyntheticEvent<HTMLImageElement, Event>) => { e.currentTarget.src = 'https://placehold.co/300x150/CCCCCC/999999?text=No+Image'; e.currentTarget.onerror = null; }} />
+            </div>
+          )}
         </div>
-      )}
+        */
+      }
     </div>
-  </div>
-);
+  );
+};
 
 interface MediaPanelProps {
   mediaAssets: MediaAsset[];
@@ -434,6 +466,8 @@ const SitePage: React.FC = () => {
   // const [pages, setPages] = useState<PageLink>();
 
   const [site, setSite] = useState<Site>(SiteDefaultState);
+  
+  const [madeDependency, setMadeDependency] = useState<boolean>(false);
 
   const [searchParams] = useSearchParams();
   const userId = searchParams.get("userId");
@@ -456,6 +490,17 @@ const SitePage: React.FC = () => {
         navigate(`/sites?userId=${userId}`);
       });
   }, []);
+
+  useEffect(() => {
+    if(site.siteId !== 0) {
+      console.log('site before dependency changing', site);
+      const siteWithD = makeSiteDependencies(site);
+      console.log('siteWithD', siteWithD);
+      setSite(siteWithD);
+      console.log('site after dependency changing', site);
+      setMadeDependency(true);
+    }
+  }, [site])
 
   useEffect(() => {
     // Simulate fetching page data when activePageId changes
@@ -484,7 +529,7 @@ const SitePage: React.FC = () => {
     alert("Page data saved to console!");
   };
 
-  const handleContentDataChange = (field: keyof ContentData, value: string) => {
+  /*const handleContentDataChange = (field: keyof ContentData, value: string) => {
     setCurrentPageData(prev => ({
       ...prev,
       content: { ...prev.content, [field]: value },
@@ -504,7 +549,7 @@ const SitePage: React.FC = () => {
         reader.readAsDataURL(file);
         console.log("Uploaded file:", file.name);
     }
-  };
+  };*/
 
   const handleSettingsDataChange = (field: keyof SettingsData | `advancedFieldType-${string}`, value: string | boolean) => {
     setCurrentPageData(prev => {
@@ -552,7 +597,7 @@ const SitePage: React.FC = () => {
             />
             <TabsComponent activeTab={activeTab} onTabChange={setActiveTab} />
             <div id="tab-panels">
-              {currentPageData.id !== -1 && activeTab === 'content' && <ContentPanel data={currentPageData.content} onDataChange={handleContentDataChange} onFileChange={handleFileUpload} />}
+              {currentPageData.id !== -1 && activeTab === 'content' && site.siteId !== 0 && madeDependency && <ContentPanel site={site} />} {/*currentPageData.content*/}
               {currentPageData.id !== -1 && activeTab === 'media' && <MediaPanel mediaAssets={currentPageData.media} />}
               {activeTab === 'settings' && <SettingsPanel data={currentPageData.settings} onDataChange={handleSettingsDataChange} />}
             </div>
