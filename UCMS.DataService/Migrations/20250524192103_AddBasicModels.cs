@@ -14,7 +14,8 @@ namespace UCMS.DataService.Migrations
                 name: "DocumentType",
                 columns: table => new
                 {
-                    DocumentTypeId = table.Column<int>(type: "int", nullable: false),
+                    DocumentTypeId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     SiteId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
