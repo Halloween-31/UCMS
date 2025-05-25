@@ -1,12 +1,13 @@
 import './App.css'
+import React from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import CMSLayout from './components/uCMSLayout';
 import Login from './pages/login/Login';
-import About from './pages/about/About';
-import React from 'react';
-import Sites from './pages/sites/Sites';
 import Register from './pages/login/Register';
-import Site from './pages/sites/site/Site';
+import About from './pages/about/About';
+import Sites from './pages/sites/Sites';
+import SitePage from './pages/sites/site/Site';
+import Settings from './pages/sites/siteSettings/SiteSettings';
 
 function App() {
   return (
@@ -14,11 +15,12 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path='' element={<CMSLayout />}>
-              <Route index element={<Login />} />
-              <Route path='register' element={<Register />} />
+            <Route index element={<Login />} />
+            <Route path='register' element={<Register />} />
           </Route>
           <Route path='sites' element={<Sites />} />
-          <Route path='site' element={<Site />} />
+          <Route path='site' element={<SitePage />} />
+          <Route path='settings' element={<Settings />} />
           <Route path="about" element={<About />} />
         </Routes>
       </BrowserRouter>

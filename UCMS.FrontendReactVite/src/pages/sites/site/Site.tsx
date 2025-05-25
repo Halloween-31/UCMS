@@ -1,19 +1,11 @@
 import React, { useState, useEffect, /*useRef,*/ type ChangeEvent, /*type FormEvent*/ } from 'react';
+import { Navigate, useNavigate, useSearchParams } from 'react-router-dom';
+import axios from 'axios';
+import GlobalHeader from '../header/Header';
+import { SiteDefaultState, type Site } from '../../../models/Site';
+import Sidebar from '../sidebar/Sidebar';
 
 // --- TypeScript Interfaces ---
-
-interface PageLink {
-  id: string;
-  name: string;
-  icon: string;
-}
-
-interface MediaLink {
-  id: number;
-  name: string;
-  icon: string;
-  type: 'image' | 'video'; // Example types
-}
 
 interface ContentData {
   headerTitle: string;
@@ -53,7 +45,7 @@ interface PageData {
   settings: SettingsData;
 }
 
-const PageDataDefault : PageData = {
+const PageDataDefault : PageData = /*{
   id: 0,
   title: '',
   description: '',
@@ -73,25 +65,52 @@ const PageDataDefault : PageData = {
     publishStatus: false,
     advancedFields: [],
   },
+};*/
+{
+    id: 0,
+    title: 'Home',
+    description: 'Editing the main landing page.',
+    content: {
+      headerTitle: 'Best CMS Ever',
+      mainHeadline: 'Main headline of page',
+      subtitle: 'You can achieve any goals and ideas using this powerful CMS!',
+      bodyText: '<p>Rich text editor would be here...</p>',
+      ctaButton: 'Learn More',
+      currentImageUrl: 'https://placehold.co/600x300/E0E7FF/4F46E5?text=Current+Image',
+    },
+    media: [
+      { id: 0, name: 'Image1.jpg', url: 'https://placehold.co/200x200/A5B4FC/3730A3?text=Image1.jpg', type: 'image' },
+      { id: 1, name: 'PromoVideo.mp4', url: '', type: 'video' }, // Placeholder for video
+    ],
+    settings: {
+      pageSlug: 'home',
+      seoTitle: 'Best CMS Ever - Home',
+      seoDescription: 'Discover the best CMS for your projects. Easy to use and powerful.',
+      publishStatus: true,
+      advancedFields: [
+        { id: 'advHeader', label: 'Header', description: 'Main headline of page', typeValue: 'textstring' },
+        { id: 'advSubtitle', label: 'Subtitle', description: 'Below title', typeValue: 'textarea' },
+      ],
+    },
 };
 
 type ActiveTab = 'content' | 'media' | 'settings';
 
 
 // --- Initial Data (Placeholders) ---
-const initialPages: PageLink[] = [
+/*const initialPages: PageLink[] = [
   { id: 'home', name: 'Home', icon: 'fas fa-home' },
   { id: 'about', name: 'About', icon: 'fas fa-info-circle' },
   { id: 'services', name: 'Services', icon: 'fas fa-concierge-bell' },
   { id: 'contact', name: 'Contact', icon: 'fas fa-envelope' },
-];
+];*/
 
-const initialMediaLinks: MediaLink[] = [
+/*const initialMediaLinks: MediaLink[] = [
   { id: 0, name: 'Logo.png', icon: 'fas fa-image', type: 'image' },
   { id: 1, name: 'HeroVideo.mp4', icon: 'fas fa-video', type: 'video' },
-];
+];*/
 
-const initialPageData: Record<string, PageData> = {
+/*const initialPageData: Record<string, PageData> = {
   home: {
     id: 0,
     title: 'Home',
@@ -120,7 +139,7 @@ const initialPageData: Record<string, PageData> = {
     },
   },
   // Add more pages as needed
-};
+};*/
 
 
 // --- Styling (from original HTML) ---
@@ -169,90 +188,11 @@ interface IconProps {
   className?: string;
   title?: string;
 }
-const Icon: React.FC<IconProps> = ({ iconClass, className, title }) => (
+export const Icon: React.FC<IconProps> = ({ iconClass, className, title }) => (
   <i className={`${iconClass} ${className || ''}`} title={title}></i>
 );
 
 // --- Components ---
-
-const GlobalHeader: React.FC = () => (
-  <header className="bg-white shadow-md h-16 flex items-center px-6 flex-shrink-0 z-10">
-    <div className="flex items-center">
-      <Icon iconClass="fas fa-shield-alt fa-2x" className="text-indigo-600" />
-      <span className="ml-3 text-xl font-bold text-indigo-700">UCMS</span>
-    </div>
-    <div className="hidden md:block">
-        <div className="ml-10 flex items-baseline space-x-4">
-            <a href="#" className="bg-indigo-100 text-indigo-700 px-3 py-2 rounded-md text-sm font-medium" aria-current="page">My Sites</a>
-            <a href="#" className="text-gray-500 hover:bg-gray-200 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">Analytics</a>
-            <a href="#" className="text-gray-500 hover:bg-gray-200 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">Settings</a>
-            <a href="#" className="text-gray-500 hover:bg-gray-200 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">Help</a>
-        </div>
-    </div>
-    <div className="ml-auto flex items-center space-x-4">
-      <span className="text-sm text-gray-600">user@example.com</span>
-      <img className="h-8 w-8 rounded-full object-cover" src="https://placehold.co/32x32/E0E7FF/4F46E5?text=U" alt="User Avatar" />
-      <button title="Logout" className="text-gray-500 hover:text-indigo-600">
-        <Icon iconClass="fas fa-sign-out-alt fa-lg" />
-      </button>
-    </div>
-  </header>
-);
-
-interface SidebarProps {
-  pages: PageLink[];
-  mediaItems: MediaLink[];
-  activePageId: string;
-  onSelectPage: (pageId: string) => void;
-  selectedLanguage: string;
-  onLanguageChange: (lang: string) => void;
-}
-const Sidebar: React.FC<SidebarProps> = ({ pages, mediaItems, activePageId, onSelectPage, selectedLanguage, onLanguageChange }) => (
-  <aside className="w-64 bg-gray-50 border-r border-gray-200 p-4 space-y-2 flex-shrink-0 overflow-y-auto">
-    <div className="mb-4">
-      <label htmlFor="language-select" className="block text-xs font-medium text-gray-500 mb-1">Language</label>
-      <select
-        id="language-select"
-        value={selectedLanguage}
-        onChange={(e) => onLanguageChange(e.target.value)}
-        className="w-full p-2 border border-gray-300 rounded-md text-sm shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-      >
-        <option value="en-US">English (USA)</option>
-        <option value="es-ES">Spanish (ES)</option>
-        <option value="fr-FR">French (FR)</option>
-      </select>
-    </div>
-
-    <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Pages</h3>
-    <nav className="space-y-1">
-      {pages.map(page => (
-        <a
-          key={page.id}
-          href="#"
-          onClick={(e) => { e.preventDefault(); onSelectPage(page.id); }}
-          className={`sidebar-link group flex items-center px-3 py-2 text-sm font-medium rounded-md text-gray-700 hover:bg-gray-200 ${activePageId === page.id ? 'active' : ''}`}
-        >
-          <Icon iconClass={page.icon} className="mr-3 text-gray-500 group-hover:text-gray-700 w-5 text-center" />
-          {page.name}
-        </a>
-      ))}
-      <a href="#" onClick={(e) => e.preventDefault()} className="group flex items-center px-3 py-2 text-sm font-medium rounded-md text-indigo-600 hover:text-indigo-800 hover:bg-indigo-50 mt-4">
-        <Icon iconClass="fas fa-plus-circle" className="mr-3 w-5 text-center" />
-        Add New Page
-      </a>
-    </nav>
-
-    <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 mt-6">Media Library</h3>
-    <nav className="space-y-1">
-      {mediaItems.map(item => (
-        <a key={item.id} href="#" onClick={(e) => e.preventDefault()} className="sidebar-link group flex items-center px-3 py-2 text-sm font-medium rounded-md text-gray-700 hover:bg-gray-200">
-          <Icon iconClass={item.icon} className="mr-3 text-gray-500 group-hover:text-gray-700 w-5 text-center" />
-          {item.name}
-        </a>
-      ))}
-    </nav>
-  </aside>
-);
 
 interface PageEditorHeaderProps {
   pageTitle: string;
@@ -483,20 +423,48 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({ data, onDataChange }) => 
 
 
 // --- Main App Component ---
-const App: React.FC = () => {
-  const [activePageId, setActivePageId] = useState<string>(''); // 'home'
+const SitePage: React.FC = () => {
+  const navigate = useNavigate();
+
+  const [activePageId, setActivePageId] = useState<number>(0); // 'home'
   const [currentPageData, setCurrentPageData] = useState<PageData>(PageDataDefault); // initialPageData.home
   const [activeTab, setActiveTab] = useState<ActiveTab>('content');
   const [selectedLanguage, setSelectedLanguage] = useState<string>('en-US');
 
+  // const [pages, setPages] = useState<PageLink>();
+
+  const [site, setSite] = useState<Site>(SiteDefaultState);
+
+  const [searchParams] = useSearchParams();
+  const userId = searchParams.get("userId");
+
+  if (!userId) {
+      return <Navigate to="/" replace />;
+  }
+  
+  const siteId = searchParams.get("siteId");
+
+  useEffect(() => {
+    axios.get<Site>(`api/site/${siteId}/withAll`)
+      .then((response) => {
+        console.log('response.data', response.data);
+        setSite(response.data);
+      })
+      .catch((error) => {
+        console.error(error)
+        setCurrentPageData(PageDataDefault);
+        navigate(`/sites?userId=${userId}`);
+      });
+  }, []);
+
   useEffect(() => {
     // Simulate fetching page data when activePageId changes
-    setCurrentPageData(initialPageData[activePageId] || initialPageData.home || {});
+    // setCurrentPageData({}); // initialPageData[activePageId] || initialPageData.home || {}
     // Reset to content tab when page changes
     setActiveTab('content');
   }, [activePageId]);
 
-  const handlePageSelect = (pageId: string) => {
+  const handlePageSelect = (pageId: number) => {
     setActivePageId(pageId);
   };
 
@@ -567,8 +535,9 @@ const App: React.FC = () => {
         <GlobalHeader />
         <div className="flex flex-1 overflow-hidden">
           <Sidebar
-            pages={initialPages}
-            mediaItems={initialMediaLinks}
+            pages={[]} // initialPages
+            mediaItems={[]} // initialMediaLinks
+            settingItems={[]}
             activePageId={activePageId}
             onSelectPage={handlePageSelect}
             selectedLanguage={selectedLanguage}
@@ -583,8 +552,8 @@ const App: React.FC = () => {
             />
             <TabsComponent activeTab={activeTab} onTabChange={setActiveTab} />
             <div id="tab-panels">
-              {activeTab === 'content' && <ContentPanel data={currentPageData.content} onDataChange={handleContentDataChange} onFileChange={handleFileUpload} />}
-              {activeTab === 'media' && <MediaPanel mediaAssets={currentPageData.media} />}
+              {currentPageData.id !== -1 && activeTab === 'content' && <ContentPanel data={currentPageData.content} onDataChange={handleContentDataChange} onFileChange={handleFileUpload} />}
+              {currentPageData.id !== -1 && activeTab === 'media' && <MediaPanel mediaAssets={currentPageData.media} />}
               {activeTab === 'settings' && <SettingsPanel data={currentPageData.settings} onDataChange={handleSettingsDataChange} />}
             </div>
           </main>
@@ -594,7 +563,7 @@ const App: React.FC = () => {
   );
 };
 
-export default App;
+export default SitePage;
 
 // To run this:
 // 1. Ensure you have a React + TypeScript project set up.
@@ -608,3 +577,9 @@ export default App;
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 */
 // 6. Your main index.tsx should render this App component.
+
+/*
+                    {activeTab === 'content' && <ContentPanel data={currentPageData.content} onDataChange={handleContentDataChange} onFileChange={handleFileUpload} />}
+                    {activeTab === 'media' && <MediaPanel mediaAssets={currentPageData.media} />}
+                    {activeTab === 'settings' && <SettingsPanel data={currentPageData.settings} onDataChange={handleSettingsDataChange} />}
+*/

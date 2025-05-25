@@ -32,10 +32,6 @@ interface MobileMenuProps {
     isOpen: boolean;
 }
 
-interface SiteCardProps {
-    site: Site;
-}
-
 // --- Icon Component ---
 const Icon: React.FC<IconProps> = ({ classes, title }) => <i className={classes} title={title}></i>;
 
@@ -241,7 +237,7 @@ const createNewSite = (e : React.MouseEvent<HTMLButtonElement>,
     navigate: NavigateFunction,
 ) => {
     e.preventDefault();
-    navigate(`/site?userId=${userId}&siteId=-1`)
+    navigate(`/site?userId=${userId}&siteId=-1`);
 };
 
 
@@ -270,7 +266,14 @@ const PageHeader: React.FC<PageHeaderProps> = (props: PageHeaderProps) => {
 };
 
 // SiteCard Component
-const SiteCard: React.FC<SiteCardProps> = ({ site }) => {
+type SiteCardProps = {
+    site: Site;
+    userId: number;
+};
+
+const SiteCard: React.FC<SiteCardProps> = ({ site, userId }) => {
+    const navigate = useNavigate();
+
     const getStatusColor = (status: string): string => {
         switch (status.toLowerCase()) {
             case 'published': return 'text-green-800 bg-green-100';
@@ -283,6 +286,11 @@ const SiteCard: React.FC<SiteCardProps> = ({ site }) => {
     const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
         e.currentTarget.onerror = null; // Prevent infinite loop if fallback also fails
         e.currentTarget.src = "https://placehold.co/600x400/E0E7FF/4F46E5?text=Error";
+    };
+
+    const editSite = (e: React.MouseEvent<HTMLButtonElement>) => {
+        e.preventDefault();
+        navigate(`/site?userId=${userId}&siteId=${site.siteId}`)
     };
 
     return (
@@ -301,15 +309,17 @@ const SiteCard: React.FC<SiteCardProps> = ({ site }) => {
             )}
             <div className="p-5 flex flex-col flex-grow">
                 <div className="flex items-center justify-between mb-2">
-                    <h3 className="text-lg font-semibold text-gray-900 truncate" title={site.title}>{site.title}</h3>
+                    <h3 className="text-lg font-semibold text-gray-900 truncate" title={site.siteName}>{site.siteName}</h3>
                     <span className={`px-2.5 py-0.5 text-xs font-semibold rounded-full ${getStatusColor(site.status)}`}>
                         {site.status}
                     </span>
                 </div>
                 <p className="text-gray-600 text-sm mb-1 truncate" title={site.domain}>{site.domain}</p>
-                <p className="text-gray-500 text-xs mb-4">{site.lastUpdated}</p>
+                <p className="text-gray-500 text-xs mb-4">{site.lastUpdated.toString()}</p>
                 <div className="mt-auto grid grid-cols-3 gap-2">
-                    <Button variant="secondary" size="small" className="w-full" title="Edit Site">
+                    <Button variant="secondary" size="small" className="w-full" title="Edit Site"
+                        onClick={editSite}
+                    >
                         <Icon classes="fas fa-pencil-alt" /> <span className="hidden sm:inline ml-1">Edit</span>
                     </Button>
                     <Button variant="neutral" size="small" className="w-full" title={site.status === 'Draft' ? "Preview Site" : "View Site"}>
@@ -423,7 +433,7 @@ const Sites: React.FC = () => {
                     {sites.length > 0 ? (
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                             {sites.map(site => (
-                                <SiteCard key={site.id} site={site} />
+                                <SiteCard key={site.siteId} site={site} userId={Number.parseInt(userId)} />
                             ))}
                             <AddNewSiteCard />
                         </div>
