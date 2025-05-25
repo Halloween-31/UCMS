@@ -50,9 +50,19 @@ namespace UCMS.DataService.Controllers
                 foreach (var prop in doctype.Properties)
                 {
                     prop.DocumentType = null;
-                    if(prop.Content != null)
+                    foreach (var contentProperty in prop.ContentProperties)
                     {
-                        prop.Content.Property = null;
+                        contentProperty.Property = null;
+                        contentProperty.Content = null;
+                    }
+                }
+                foreach (var content in doctype.Contents)
+                {
+                    content.DocumentType = null;
+                    foreach (var contentProperty in content.ContentProperties)
+                    {
+                        contentProperty.Property = null;
+                        contentProperty.Content = null;
                     }
                 }
             }

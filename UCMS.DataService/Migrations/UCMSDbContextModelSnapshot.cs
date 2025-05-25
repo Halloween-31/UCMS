@@ -31,6 +31,32 @@ namespace UCMS.DataService.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ContentId"));
 
+                    b.Property<string>("ContentName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("DocumentTypeId")
+                        .HasColumnType("int");
+
+                    b.HasKey("ContentId");
+
+                    b.HasIndex("DocumentTypeId");
+
+                    b.ToTable("Content");
+                });
+
+            modelBuilder.Entity("UCMS.Models.DbModels.ContentProperty", b =>
+                {
+                    b.Property<int>("ContentPropertyId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("ContentPropertyId");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ContentPropertyId"));
+
+                    b.Property<int>("ContentId")
+                        .HasColumnType("int");
+
                     b.Property<int>("PropertyId")
                         .HasColumnType("int");
 
@@ -38,19 +64,23 @@ namespace UCMS.DataService.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("ContentId");
+                    b.HasKey("ContentPropertyId");
 
-                    b.HasIndex("PropertyId")
-                        .IsUnique();
+                    b.HasIndex("ContentId");
 
-                    b.ToTable("Content");
+                    b.HasIndex("PropertyId");
+
+                    b.ToTable("ContentProperty");
                 });
 
             modelBuilder.Entity("UCMS.Models.DbModels.DocumentType", b =>
                 {
                     b.Property<int>("DocumentTypeId")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasColumnName("DocumentTypeId");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("DocumentTypeId"));
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -60,6 +90,8 @@ namespace UCMS.DataService.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("DocumentTypeId");
+
+                    b.HasIndex("SiteId");
 
                     b.ToTable("DocumentType");
                 });
@@ -163,11 +195,30 @@ namespace UCMS.DataService.Migrations
 
             modelBuilder.Entity("UCMS.Models.DbModels.Content", b =>
                 {
-                    b.HasOne("UCMS.Models.DbModels.Property", "Property")
-                        .WithOne("Content")
-                        .HasForeignKey("UCMS.Models.DbModels.Content", "PropertyId")
+                    b.HasOne("UCMS.Models.DbModels.DocumentType", "DocumentType")
+                        .WithMany("Contents")
+                        .HasForeignKey("DocumentTypeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("DocumentType");
+                });
+
+            modelBuilder.Entity("UCMS.Models.DbModels.ContentProperty", b =>
+                {
+                    b.HasOne("UCMS.Models.DbModels.Content", "Content")
+                        .WithMany("ContentProperties")
+                        .HasForeignKey("ContentId")
+                        .OnDelete(DeleteBehavior.ClientCascade)
+                        .IsRequired();
+
+                    b.HasOne("UCMS.Models.DbModels.Property", "Property")
+                        .WithMany("ContentProperties")
+                        .HasForeignKey("PropertyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Content");
 
                     b.Navigation("Property");
                 });
@@ -176,7 +227,7 @@ namespace UCMS.DataService.Migrations
                 {
                     b.HasOne("UCMS.Models.DbModels.Site", "Site")
                         .WithMany("DocumentTypes")
-                        .HasForeignKey("DocumentTypeId")
+                        .HasForeignKey("SiteId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -205,14 +256,21 @@ namespace UCMS.DataService.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("UCMS.Models.DbModels.Content", b =>
+                {
+                    b.Navigation("ContentProperties");
+                });
+
             modelBuilder.Entity("UCMS.Models.DbModels.DocumentType", b =>
                 {
+                    b.Navigation("Contents");
+
                     b.Navigation("Properties");
                 });
 
             modelBuilder.Entity("UCMS.Models.DbModels.Property", b =>
                 {
-                    b.Navigation("Content");
+                    b.Navigation("ContentProperties");
                 });
 
             modelBuilder.Entity("UCMS.Models.DbModels.Site", b =>

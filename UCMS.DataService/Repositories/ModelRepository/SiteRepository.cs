@@ -25,7 +25,9 @@ namespace UCMS.DataService.Repositories.ModelRepository
             return await _dbSet
                 .Include(site => site.DocumentTypes)
                     .ThenInclude(doctype => doctype.Properties)
-                        .ThenInclude(prop => prop.Content)
+                        .ThenInclude(prop => prop.ContentProperties)
+                    .ThenInclude(doctype => doctype.Content)
+                        .ThenInclude(content => content.ContentProperties)
                 .FirstOrDefaultAsync(site => site.SiteId == siteId);
         }
     }

@@ -78,12 +78,30 @@ namespace UCMS.DataService.Data
                 entity.HasKey(e => e.ContentId);
 
                 entity.Property(e => e.ContentId).HasColumnName(nameof(Content.ContentId));
+                entity.Property(e => e.ContentName);
+
+                entity.HasOne(e => e.DocumentType)
+                    .WithMany(e => e.Contents)
+                    .HasForeignKey(e => e.DocumentTypeId)
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            modelBuilder.Entity<ContentProperty>(entity =>
+            {
+                entity.HasKey(e => e.ContentPropertyId);
+
+                entity.Property(e => e.ContentPropertyId).HasColumnName(nameof(ContentProperty.ContentPropertyId));
                 entity.Property(e => e.Value);
 
                 entity.HasOne(e => e.Property)
-                    .WithOne(e => e.Content)
-                    .HasForeignKey<Content>(e => e.PropertyId)
-                    .IsRequired();
+                    .WithMany(e => e.ContentProperties)
+                    .HasForeignKey(e => e.PropertyId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasOne(e => e.Content)
+                    .WithMany(e => e.ContentProperties)
+                    .HasForeignKey(e => e.ContentId)
+                    .OnDelete(DeleteBehavior.ClientCascade);
             });
 
             base.OnModelCreating(modelBuilder);

@@ -12,9 +12,11 @@ namespace UCMS.Models.DbModels
         public int Id { get => ContentId; }
 
         public int ContentId { get; set; }
-        public string Value { get; set; } = string.Empty;
+        public string ContentName { get; set; } = string.Empty;
 
-        public int PropertyId { get; set; }
-        public Property Property { get; set; } = null!;
+        public int DocumentTypeId { get; set; }
+        public DocumentType DocumentType { get; set; } = null!;
+
+        public ICollection<ContentProperty> ContentProperties { get; set; } = [];
     }
 }

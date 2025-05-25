@@ -18,6 +18,6 @@ namespace UCMS.Models.DbModels
         public int DocumentTypeId { get; set; }
         public DocumentType DocumentType { get; set; } = null!;
 
-        public Content? Content { get; set; }
+        public ICollection<ContentProperty> ContentProperties { get; set; } = [];
     }
 }
