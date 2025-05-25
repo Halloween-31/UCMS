@@ -1,10 +1,12 @@
+import type { Site } from "./Site";
+
 export interface User {
     userId : number,
     name : string,
     email :  string,
     login : string,
     password: string,
-    sites : any[],
+    sites : Site[],
 };
 
 export const UserDefaultState : User = {
