@@ -1,6 +1,6 @@
 ﻿using System.Xml.Linq;
 using Microsoft.EntityFrameworkCore;
-using UCMS.Models.DbModels;
+using UCMS.Models.DbModels.SiteContentCreation;
 
 // PM> Add-Migration InitialCreate -Project UCMS.DataService -StartupProject UCMS.DataService -Context UCMSDbContext
 // PM> Update-Database InitialCreate -Project UCMS.DataService -StartupProject UCMS.DataService -Context UCMSDbContext

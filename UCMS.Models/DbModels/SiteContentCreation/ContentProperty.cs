@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UCMS.Models.Interface;
 
-namespace UCMS.Models.DbModels
+namespace UCMS.Models.DbModels.SiteContentCreation
 {
     public class ContentProperty : IEntity
     {

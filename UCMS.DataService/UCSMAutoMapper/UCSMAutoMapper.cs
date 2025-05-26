@@ -5,7 +5,7 @@ using UCMS.DataService.DTOs.ContentPropertyDTOs;
 using UCMS.DataService.DTOs.DocumentTypeDTO;
 using UCMS.DataService.DTOs.PropertyDTOs;
 using UCMS.DataService.DTOs.SiteDTOs;
-using UCMS.Models.DbModels;
+using UCMS.Models.DbModels.SiteContentCreation;
 
 namespace UCMS.DataService.UCSMAutoMapper
 {

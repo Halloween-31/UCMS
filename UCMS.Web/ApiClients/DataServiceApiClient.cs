@@ -1,4 +1,4 @@
-﻿using UCMS.Models.DbModels;
+﻿using UCMS.Models.DbModels.SiteContentCreation;
 
 namespace UCMS.Web.ApiClients
 {

@@ -6,7 +6,7 @@ using UCMS.DataService.Controllers.BaseController;
 using UCMS.DataService.DTOs.SiteDTOs;
 using UCMS.DataService.Repositories.Interface;
 using UCMS.DataService.Repositories.ModelRepository;
-using UCMS.Models.DbModels;
+using UCMS.Models.DbModels.SiteContentCreation;
 
 namespace UCMS.DataService.Controllers
 {

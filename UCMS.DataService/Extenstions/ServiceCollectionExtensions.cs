@@ -3,7 +3,7 @@ using UCMS.DataService.Repositories.Implementation;
 using UCMS.DataService.Repositories.Interface;
 using UCMS.DataService.Repositories.ModelRepository;
 using UCMS.DataService.Repositories.Partial;
-using UCMS.Models.DbModels;
+using UCMS.Models.DbModels.SiteContentCreation;
 
 namespace UCMS.DataService.Extenstions
 {

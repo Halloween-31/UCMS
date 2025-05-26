@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using UCMS.Models.Interface;
 using UCMS.Models.ModelEnums.Site;
 
-namespace UCMS.Models.DbModels
+namespace UCMS.Models.DbModels.SiteContentCreation
 {
     public class Site : IEntity
     {
@@ -18,7 +18,7 @@ namespace UCMS.Models.DbModels
         public string Domain { get; set; } = string.Empty;
         public string Status { get; set; } = string.Empty; // SiteStatus
         public DateTime LastUpdated { get; set; }
-        public string? ImageUrl {  get; set; }
+        public string? ImageUrl { get; set; }
         public string? ImageAlt { get; set; }
 
         public int UserId { get; set; }

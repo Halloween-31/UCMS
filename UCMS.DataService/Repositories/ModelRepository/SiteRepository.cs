@@ -1,8 +1,8 @@
 ﻿using UCMS.DataService.Data;
 using UCMS.DataService.Repositories.Implementation;
-using UCMS.Models.DbModels;
 using Microsoft.EntityFrameworkCore;
 using AutoMapper;
+using UCMS.Models.DbModels.SiteContentCreation;
 
 namespace UCMS.DataService.Repositories.ModelRepository
 {
