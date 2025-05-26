@@ -7,6 +7,6 @@ export interface ContentProperty {
 
     propertyId: number,
     property: Property,
-    contentid: number,
+    contentId: number,
     content: Content,
 }

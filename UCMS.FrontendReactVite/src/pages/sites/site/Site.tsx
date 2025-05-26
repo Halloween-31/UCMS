@@ -43,6 +43,7 @@ interface PageData {
   content: ContentData;
   media: MediaAsset[];
   settings: SettingsData;
+  code: PageCodeData;
 }
 
 const PageDataDefault : PageData = /*{
@@ -92,9 +93,15 @@ const PageDataDefault : PageData = /*{
         { id: 'advSubtitle', label: 'Subtitle', description: 'Below title', typeValue: 'textarea' },
       ],
     },
+    code: {
+      html: '',
+      css: '',
+    },
 };
 
 type ActiveTab = 'content' | 'media' | 'settings';
+type EditorView = 'visual' | 'code';
+type ActiveCodeEditorTab = 'html' | 'css';
 
 
 // --- Initial Data (Placeholders) ---
@@ -141,6 +148,86 @@ type ActiveTab = 'content' | 'media' | 'settings';
   // Add more pages as needed
 };*/
 
+const placeholderHTML = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home Page</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>Welcome to Best CMS Ever</h1>
+    </header>
+    <main>
+        <h2>Main headline of page</h2>
+        <p>You can achieve any goals and ideas using this powerful CMS!</p>
+        <img src="https://placehold.co/600x300/E0E7FF/4F46E5?text=Page+Image" alt="Placeholder Image">
+        <a href="#" class="cta-button">Learn More</a>
+    </main>
+    <footer>
+        <p>&copy; ${new Date().getFullYear()} MyCMS</p>
+    </footer>
+</body>
+</html>
+`;
+
+const placeholderCSS = `
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+    color: #333;
+}
+
+header {
+    background-color: #333;
+    color: #fff;
+    padding: 1rem 0;
+    text-align: center;
+}
+
+main {
+    padding: 1rem;
+    text-align: center;
+}
+
+main img {
+    max-width: 100%;
+    height: auto;
+    margin-top: 1rem;
+    border-radius: 8px;
+}
+
+.cta-button {
+    display: inline-block;
+    background-color: #4f46e5; /* Indigo */
+    color: white;
+    padding: 10px 20px;
+    text-decoration: none;
+    border-radius: 5px;
+    margin-top: 1rem;
+    transition: background-color 0.3s ease;
+}
+
+.cta-button:hover {
+    background-color: #3730a3; /* Darker Indigo */
+}
+
+footer {
+    text-align: center;
+    padding: 1rem 0;
+    background-color: #333;
+    color: #fff;
+    position: relative; /* Changed from fixed for better layout in editor */
+    bottom: 0;
+    width: 100%;
+}
+`;
+
 
 // --- Styling (from original HTML) ---
 const globalStyles = `
@@ -180,6 +267,17 @@ const globalStyles = `
       border-color: #4f46e5; /* Indigo-600 */
       box-shadow: 0 0 0 1px #4f46e5;
   }
+  .code-textarea {
+    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace;
+    min-height: 400px;
+    background-color: #1e1e1e; /* Dark background for code */
+    color: #d4d4d4; /* Light text for code */
+    border-radius: 0.375rem; /* rounded-md */
+    padding: 1rem; /* p-4 */
+    line-height: 1.5;
+    white-space: pre;
+    overflow: auto;
+  }
 `;
 
 // --- Icon Component ---
@@ -199,8 +297,10 @@ interface PageEditorHeaderProps {
   pageDescription: string;
   onPageTitleChange: (newTitle: string) => void;
   onSave: () => void;
+  currentEditorView: EditorView;
+  onToggleEditorView: (view: EditorView) => void;
 }
-const PageEditorHeader: React.FC<PageEditorHeaderProps> = ({ pageTitle, pageDescription, onPageTitleChange, onSave }) => (
+const PageEditorHeader: React.FC<PageEditorHeaderProps> = ({ pageTitle, pageDescription, onPageTitleChange, onSave, currentEditorView, onToggleEditorView }) => (
   <div className="flex items-center justify-between mb-6 pb-4 border-b border-gray-200">
     <div>
       <input
@@ -208,14 +308,23 @@ const PageEditorHeader: React.FC<PageEditorHeaderProps> = ({ pageTitle, pageDesc
         value={pageTitle}
         onChange={(e) => onPageTitleChange(e.target.value)}
         className="text-2xl font-semibold text-gray-800 border-none p-0 focus:ring-0 focus:border-transparent w-auto inline-block bg-transparent"
+        readOnly={currentEditorView === 'code'} // Make title non-editable in code view for simplicity
       />
       <p className="text-sm text-gray-500">{pageDescription}</p>
     </div>
     <div className="flex items-center space-x-2">
-      <button className="px-3 py-1.5 text-sm font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-md border border-gray-300 flex items-center">
-        <Icon iconClass="fas fa-info-circle" className="mr-2" /> Info
+      <button 
+        onClick={() => onToggleEditorView('visual')}
+        className={`px-3 py-1.5 text-sm font-medium rounded-md border flex items-center
+          ${currentEditorView === 'visual' ? 'bg-indigo-100 text-indigo-700 border-indigo-300' : 'bg-gray-100 text-gray-600 hover:bg-gray-200 border-gray-300'}`}
+      >
+        <Icon iconClass="fas fa-palette" className="mr-2" /> Visual
       </button>
-      <button className="px-3 py-1.5 text-sm font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-md border border-gray-300 flex items-center">
+      <button 
+        onClick={() => onToggleEditorView('code')}
+        className={`px-3 py-1.5 text-sm font-medium rounded-md border flex items-center
+                    ${currentEditorView === 'code' ? 'bg-indigo-100 text-indigo-700 border-indigo-300' : 'bg-gray-100 text-gray-600 hover:bg-gray-200 border-gray-300'}`}
+      >
         <Icon iconClass="fas fa-code" className="mr-2" /> Code
       </button>
       <button onClick={onSave} className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-md shadow-sm flex items-center">
@@ -392,63 +501,142 @@ const MediaPanel: React.FC<MediaPanelProps> = ({ mediaAssets }) => (
 );
 
 interface SettingsPanelProps {
-  data: SettingsData;
-  onDataChange: (field: keyof SettingsData | `advancedFieldType-${string}`, value: string | boolean) => void;
+  site: Site;
 }
-const SettingsPanel: React.FC<SettingsPanelProps> = ({ data, onDataChange }) => (
-  <div className="space-y-6">
-    <div className="bg-gray-50 p-6 rounded-lg shadow">
-      <h3 className="text-lg font-semibold text-gray-700 mb-1">Page Settings</h3>
-      <p className="text-xs text-gray-500 mb-4">Configure various options for this page.</p>
-      <div className="space-y-4">
-        <div>
-          <label htmlFor="page-slug" className="block text-sm font-medium text-gray-700 mb-1">Page Slug (URL)</label>
-          <div className="flex rounded-md shadow-sm">
-            <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 text-sm">
-              yourdomain.com/
-            </span>
-            <input type="text" id="page-slug" value={data.pageSlug} onChange={(e) => onDataChange('pageSlug', e.target.value)} className="form-input flex-1 block w-full rounded-none rounded-r-md p-2 border sm:text-sm" />
-          </div>
-        </div>
-        <div>
-          <label htmlFor="seo-title" className="block text-sm font-medium text-gray-700 mb-1">SEO Title</label>
-          <input type="text" id="seo-title" value={data.seoTitle} onChange={(e) => onDataChange('seoTitle', e.target.value)} className="form-input w-full p-2 border rounded-md shadow-sm" />
-        </div>
-        <div>
-          <label htmlFor="seo-description" className="block text-sm font-medium text-gray-700 mb-1">SEO Meta Description</label>
-          <textarea id="seo-description" rows={3} value={data.seoDescription} onChange={(e) => onDataChange('seoDescription', e.target.value)} className="form-textarea w-full p-2 border rounded-md shadow-sm"></textarea>
-        </div>
-        <div className="flex items-center">
-          <input id="publish-status" name="publish-status" type="checkbox" checked={data.publishStatus} onChange={(e) => onDataChange('publishStatus', e.target.checked)} className="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500" />
-          <label htmlFor="publish-status" className="ml-2 block text-sm text-gray-900">
-            Publish this page
-          </label>
+const SettingsPanel: React.FC<SettingsPanelProps> = ({ site }) => {
+  return (
+    <div className="space-y-6">
+      <div className="bg-gray-50 p-6 rounded-lg shadow">
+        <h3 className="text-lg font-semibold text-gray-700 mb-1">Page Settings</h3>
+        <p className="text-xs text-gray-500 mb-4">Configure various options for this page.</p>
+        <div className="space-y-4">
+          {site.documentTypes[0].properties.map((property, index) => (
+            <div key={index}>
+              <label htmlFor="seo-title" className="block text-sm font-medium text-gray-700 mb-1">{property.propertyName}</label>
+              <input type="text" id="seo-title" value={property.dataType} className="form-input w-full p-2 border rounded-md shadow-sm" />
+            </div>
+          ))}
         </div>
       </div>
     </div>
-    <div className="bg-gray-50 p-6 rounded-lg shadow">
-      <h3 className="text-lg font-semibold text-gray-700 mb-1">Advanced Settings</h3>
-      <p className="text-xs text-gray-500 mb-4">Define field types (mimicking your image).</p>
-      <div className="space-y-4">
-        {data.advancedFields.map((field) => (
-          <div key={field.id} className="grid grid-cols-1 md:grid-cols-2 gap-4 items-end">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Field: {field.label}</label>
-              <p className="text-xs text-gray-500">{field.description}</p>
-            </div>
-            <div>
-              <label htmlFor={`type-${field.id}`} className="block text-xs font-medium text-gray-500 mb-1">Type</label>
-              <input
-                type="text"
-                id={`type-${field.id}`}
-                value={field.typeValue}
-                onChange={(e) => onDataChange(`advancedFieldType-${field.id}`, e.target.value)}
-                className="form-input w-full p-2 border rounded-md shadow-sm text-sm"
-              />
-            </div>
-          </div>
-        ))}
+  )
+};
+
+// --- Code Editor ---
+interface PageCodeData {
+  html: string;
+  css: string;
+  // js?: string; // Optional for future expansion
+}
+type CodeEditorViewProps = {
+  codeData: PageCodeData;
+  onCodeChange: (type: keyof PageCodeData, newCode: string) => void;
+}
+const CodeEditorView: React.FC<CodeEditorViewProps> = ({ codeData, onCodeChange }) => {
+  const [activeCodeTab, setActiveCodeTab] = useState<ActiveCodeEditorTab>('html');
+
+  console.log('codeData.html', codeData.html);
+
+  if ((codeData.html && codeData.html.length === 0)) {
+    codeData.html = placeholderHTML;
+  }
+  if ((codeData.css && codeData.css.length === 0)) {
+    codeData.css = placeholderCSS;
+  }
+
+  console.log('codeData.html', codeData.html);
+
+  return (
+    <div className="space-y-6">
+      <div className="border-b border-gray-200">
+        <nav className="-mb-px flex space-x-6" aria-label="Code Tabs">
+          <button
+            onClick={() => setActiveCodeTab('html')}
+            className={`tab-button whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm ${activeCodeTab === 'html' ? 'active text-indigo-600 border-indigo-500' : 'text-gray-500 hover:text-indigo-600 hover:border-indigo-500'}`}
+          >
+            HTML
+          </button>
+          <button
+            onClick={() => setActiveCodeTab('css')}
+            className={`tab-button whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm ${activeCodeTab === 'css' ? 'active text-indigo-600 border-indigo-500' : 'text-gray-500 hover:text-indigo-600 hover:border-indigo-500'}`}
+          >
+            CSS
+          </button>
+          {/* Add JS tab if needed in future */}
+        </nav>
       </div>
+
+      {activeCodeTab === 'html' && (
+        <div>
+          <label htmlFor="html-code-editor" className="block text-sm font-medium text-gray-700 mb-2">HTML Code</label>
+          <textarea
+            id="html-code-editor"
+            value={ codeData.html }
+            onChange={(e) => onCodeChange('html', e.target.value)}
+            className="code-textarea w-full"
+            spellCheck="false"
+          />
+        </div>
+      )}
+
+      {activeCodeTab === 'css' && (
+        <div>
+          <label htmlFor="css-code-editor" className="block text-sm font-medium text-gray-700 mb-2">CSS Code</label>
+          <textarea
+            id="css-code-editor"
+            value={ codeData.css }
+            onChange={(e) => onCodeChange('css', e.target.value)}
+            className="code-textarea w-full"
+            spellCheck="false"
+          />
+        </div>
+      )}
+    </div>
+  );
+};
+
+// --- AI Chat Components ---
+interface AiChatButtonProps { onToggleChat: () => void; }
+const AiChatButton: React.FC<AiChatButtonProps> = ({ onToggleChat }) => (
+  <button
+    onClick={onToggleChat}
+    className="fixed bottom-6 right-6 bg-indigo-600 hover:bg-indigo-700 text-white p-4 rounded-full shadow-lg z-50 transition-transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+    title="Open AI Chat"
+  >
+    <Icon iconClass="fas fa-comments fa-lg" />
+  </button>
+);
+
+interface AiChatPanelProps { isOpen: boolean; onClose: () => void; }
+const AiChatPanel: React.FC<AiChatPanelProps> = ({ isOpen, onClose }) => (
+  <div
+    className={`fixed top-16 bottom-0 right-0 bg-gray-100 border-l border-gray-300 shadow-xl z-50
+                transform transition-transform duration-300 ease-in-out
+                w-80 xl:w-96 p-4 flex flex-col
+                ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}
+  >
+    <div className="flex items-center justify-between mb-4 flex-shrink-0">
+      <h2 className="text-lg font-semibold text-gray-800">AI Assistant</h2>
+      <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
+        <Icon iconClass="fas fa-times fa-lg" />
+      </button>
+    </div>
+    <div className="flex-grow overflow-y-auto mb-4 bg-white p-3 rounded-md shadow">
+      <p className="text-sm text-gray-500">AI Chat is ready. Ask me anything about this page!</p>
+      <div className="mt-3 space-y-2 text-xs">
+        <div className="p-2 bg-indigo-50 rounded-lg self-start max-w-[85%] break-words">How can I improve SEO for this page?</div>
+        <div className="p-2 bg-gray-200 rounded-lg self-end text-right ml-auto max-w-[85%] break-words">You can start by optimizing your meta description and ensuring relevant keywords are used in the content.</div>
+      </div>
+    </div>
+    <div className="mt-auto flex-shrink-0">
+      <textarea
+        className="form-textarea w-full p-2 border rounded-md shadow-sm text-sm"
+        rows={3}
+        placeholder="Type your message..."
+      />
+      <button className="mt-2 w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-4 rounded-md text-sm font-medium">
+        Send
+      </button>
     </div>
   </div>
 );
@@ -460,8 +648,10 @@ const SitePage: React.FC = () => {
 
   const [activePageId, setActivePageId] = useState<number>(0); // 'home'
   const [currentPageData, setCurrentPageData] = useState<PageData>(PageDataDefault); // initialPageData.home
-  const [activeTab, setActiveTab] = useState<ActiveTab>('content');
+  const [activeVisualTab, setActiveVisualTab] = useState<ActiveTab>('content');
   const [selectedLanguage, setSelectedLanguage] = useState<string>('en-US');
+  const [editorView, setEditorView] = useState<EditorView>('visual');
+  const [isChatOpen, setIsChatOpen] = useState<boolean>(false); // New state for AI Chat
 
   // const [pages, setPages] = useState<PageLink>();
 
@@ -506,7 +696,7 @@ const SitePage: React.FC = () => {
     // Simulate fetching page data when activePageId changes
     // setCurrentPageData({}); // initialPageData[activePageId] || initialPageData.home || {}
     // Reset to content tab when page changes
-    setActiveTab('content');
+    setActiveVisualTab('content');
   }, [activePageId]);
 
   const handlePageSelect = (pageId: number) => {
@@ -527,6 +717,63 @@ const SitePage: React.FC = () => {
     console.log("Saving page:", activePageId, currentPageData);
     // In a real app, send data to backend API
     alert("Page data saved to console!");
+    console.log('site to save', site);
+
+    const objectToSave = {
+      siteId: site.siteId,
+      siteName: site.siteName,
+      domain: site.domain,
+      status: site.status,
+      lastUpdated: site.lastUpdated,
+      imageUrl: site.imageUrl,
+      imageAlt: site.imageAlt,
+      userId: site.userId,
+      documentTypes: [
+        {
+          documentTypeId: site.documentTypes[0].documentTypeId,
+          name: site.documentTypes[0].name,
+          siteId: site.documentTypes[0].siteId,
+          code: {
+            codeId: site.documentTypes[0].code.codeId,
+            codeValue: site.documentTypes[0].code.codeValue,
+            documentTypeId: site.documentTypes[0].code.documentTypeId
+          },
+          properties: [
+            {
+              propertyId: site.documentTypes[0].properties[0].propertyId,
+              propertyName: site.documentTypes[0].properties[0].propertyName,
+              dataType: site.documentTypes[0].properties[0].dataType,
+              documentTypeId: site.documentTypes[0].properties[0].documentTypeId,
+              contentProperties: [
+                {
+                  contentPropertyId: site.documentTypes[0].properties[0].contentProperties[0].contentPropertyId,
+                  value: site.documentTypes[0].properties[0].contentProperties[0].value,
+                  propertyId: site.documentTypes[0].properties[0].contentProperties[0].propertyId,
+                  contentId: site.documentTypes[0].properties[0].contentProperties[0].contentId
+                }
+              ]
+            }
+          ],
+          contents: [
+            {
+              contentId: site.documentTypes[0].contents[0].contentId,
+              contentName: site.documentTypes[0].contents[0].contentName,
+              documentTypeId: site.documentTypes[0].contents[0].documentTypeId,
+              contentProperties: [
+                {
+                  contentPropertyId: site.documentTypes[0].contents[0].contentProperties[0].contentPropertyId,
+                  value: site.documentTypes[0].contents[0].contentProperties[0].value,
+                  propertyId: site.documentTypes[0].contents[0].contentProperties[0].propertyId,
+                  contentId: site.documentTypes[0].contents[0].contentProperties[0].contentId
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    };
+    console.log('object to save', objectToSave);
+    axios.put<any>(`api/Site/RealUpdate/${site.siteId}`, objectToSave);
   };
 
   /*const handleContentDataChange = (field: keyof ContentData, value: string) => {
@@ -551,7 +798,7 @@ const SitePage: React.FC = () => {
     }
   };*/
 
-  const handleSettingsDataChange = (field: keyof SettingsData | `advancedFieldType-${string}`, value: string | boolean) => {
+  /*const handleSettingsDataChange = (field: keyof SettingsData | `advancedFieldType-${string}`, value: string | boolean) => {
     setCurrentPageData(prev => {
       if (typeof field === 'string' && field.startsWith('advancedFieldType-')) {
         const fieldId = field.replace('advancedFieldType-', '');
@@ -570,8 +817,30 @@ const SitePage: React.FC = () => {
         settings: { ...prev.settings, [field as keyof SettingsData]: value },
       };
     });
+  };*/
+
+  const handleCodeDataChange = (type: keyof PageCodeData, newCode: string) => {
+    console.log('newCode', newCode);
+    setCurrentPageData(prev => ({
+      ...prev,
+      code: { ...prev.code, [type]: newCode },
+    }));
+    setSite(prev => ({
+      ...prev,
+      documentTypes: prev.documentTypes.map((docType, index) => index === 0 ? { ...docType, code: {
+          codeId: docType.code.codeId,
+          codeValue: newCode,
+          documentTypeId: docType.code.documentTypeId,
+          documentType: docType.code.documentType,
+        } } : docType),
+    }));
   };
 
+  const toggleEditorView = (view: EditorView) => {
+    setEditorView(view);
+  };
+
+  const toggleChatPanel = () => setIsChatOpen(prev => !prev); // Toggle AI Chat panel
 
   return (
     <>
@@ -594,14 +863,56 @@ const SitePage: React.FC = () => {
               pageDescription={currentPageData.description}
               onPageTitleChange={handlePageTitleChange}
               onSave={handleSavePage}
+              currentEditorView={editorView}
+              onToggleEditorView={toggleEditorView}
             />
-            <TabsComponent activeTab={activeTab} onTabChange={setActiveTab} />
-            <div id="tab-panels">
-              {currentPageData.id !== -1 && activeTab === 'content' && site.siteId !== 0 && madeDependency && <ContentPanel site={site} />} {/*currentPageData.content*/}
-              {currentPageData.id !== -1 && activeTab === 'media' && <MediaPanel mediaAssets={currentPageData.media} />}
-              {activeTab === 'settings' && <SettingsPanel data={currentPageData.settings} onDataChange={handleSettingsDataChange} />}
-            </div>
+            {editorView === 'visual' ? (
+              <>
+                <TabsComponent activeTab={activeVisualTab} onTabChange={setActiveVisualTab} />
+                <div id="tab-panels">
+                  {activeVisualTab === 'content' && site.siteId !== 0 && madeDependency && <ContentPanel site={site} /> }
+                  {activeVisualTab === 'media' && <MediaPanel mediaAssets={currentPageData.media} />}
+                  {activeVisualTab === 'settings' && site.siteId !== 0 && madeDependency && <SettingsPanel site={site} />}
+                </div>
+              </>
+            ) : (
+              <>
+                {site.siteId !== 0 && madeDependency &&
+                  <CodeEditorView codeData={{
+                    html: site.documentTypes[0].code.codeValue,
+                    css: '',
+                  }} onCodeChange={handleCodeDataChange} />
+                }
+              </>
+            )}
+            {
+              /*
+              <div id="tab-panels">
+                {currentPageData.id !== -1 && activeTab === 'content' && site.siteId !== 0 && madeDependency && <ContentPanel site={site} />} //{currentPageData.content}
+                {currentPageData.id !== -1 && activeTab === 'media' && <MediaPanel mediaAssets={currentPageData.media} />}
+                {activeTab === 'settings' && <SettingsPanel data={currentPageData.settings} onDataChange={handleSettingsDataChange} />}
+              </div>
+
+
+              {editorView === 'visual' ? (
+                <>
+                  <TabsComponent activeTab={activeVisualTab} onTabChange={setActiveVisualTab} />
+                  <div id="tab-panels">
+                    {activeVisualTab === 'content' && <ContentPanel data={currentPageData.content} onDataChange={handleContentDataChange} onFileChange={handleFileUpload} />}
+                    {activeVisualTab === 'media' && <MediaPanel mediaAssets={currentPageData.media} />}
+                    {activeVisualTab === 'settings' && <SettingsPanel data={currentPageData.settings} onDataChange={handleSettingsDataChange} />}
+                  </div>
+                </>
+              ) : (
+                <CodeEditorView codeData={currentPageData.code} onCodeChange={handleCodeDataChange} />
+              )}
+              */
+            }
           </main>
+
+          {/* AI Chat Components - Rendered outside main scroll, but within the flex container for layout context */}
+          {!isChatOpen && <AiChatButton onToggleChat={toggleChatPanel} />}
+          <AiChatPanel isOpen={isChatOpen} onClose={toggleChatPanel} />
         </div>
       </div>
     </>

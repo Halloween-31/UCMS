@@ -1,3 +1,4 @@
+import type { Code } from "./Code";
 import type { Content } from "./Content";
 import type { Property } from "./Property";
 import type { Site } from "./Site";
@@ -11,4 +12,5 @@ export interface DocumentType {
 
     properties: Property[],
     contents: Content[],
+    code: Code,
 };

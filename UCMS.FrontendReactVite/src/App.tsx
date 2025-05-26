@@ -8,6 +8,8 @@ import About from './pages/about/About';
 import Sites from './pages/sites/Sites';
 import SitePage from './pages/sites/site/Site';
 import Settings from './pages/sites/siteSettings/SiteSettings';
+import TestPage from './pages/testingPage/TestPage';
+import TestPageAI from './pages/testingPage/TestPageAI';
 
 function App() {
   return (
@@ -22,6 +24,8 @@ function App() {
           <Route path='site' element={<SitePage />} />
           <Route path='settings' element={<Settings />} />
           <Route path="about" element={<About />} />
+          <Route path='test' element={<TestPage />} />
+          <Route path='testAI' element={<TestPageAI />} />
         </Routes>
       </BrowserRouter>
     </React.StrictMode>

@@ -1,4 +1,5 @@
 import type { DocumentType } from "./DocumentType";
+import type { User } from "./User";
 
 export interface Site {
     siteId: number;
@@ -6,9 +7,12 @@ export interface Site {
     domain: string;
     status: "Published" | "Draft" | "Review" | string; // Allow other strings for flexibility
     lastUpdated: Date;
-    imageUrl: string | null;
+    imageUrl: string;
     imageAlt: string;
     documentTypes : DocumentType[];
+
+    userId: number,
+    user: User | null,
 };
 
 export const SiteDefaultState: Site = {
@@ -17,9 +21,11 @@ export const SiteDefaultState: Site = {
     domain: '',
     status: "Draft",
     lastUpdated: new Date(),
-    imageUrl: null,
+    imageUrl: '',
     imageAlt: '',
     documentTypes: [],
+    userId: 0,
+    user: null
 };
 
 export function makeSiteDependencies(site: Site) : Site {
