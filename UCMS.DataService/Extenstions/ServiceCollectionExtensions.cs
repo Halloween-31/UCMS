@@ -17,7 +17,7 @@ namespace UCMS.DataService.Extenstions
             // Get all entity types from UCMS.Models.DbModels namespace
             var entityTypes = Assembly.GetAssembly(typeof(User))
                 .GetTypes()
-                .Where(t => t.Namespace == "UCMS.Models.DbModels" &&
+                .Where(t => t.Namespace == typeof(User).Namespace &&
                            !t.IsAbstract &&
                            !t.IsInterface)
                 .ToList();
