@@ -1,4 +1,5 @@
-using UCMS.Web;
+﻿using UCMS.Web;
+using UCMS.Web.ApiClients;
 using UCMS.Web.Components;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,6 +11,16 @@ builder.AddRedisOutputCache("cache");
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+
+builder.Services.AddControllersWithViews(); // Add this for MVC
+//builder.Services.AddRazorPages(); // Optional if you want Razor Pages too
+
+builder.Services.AddHttpClient<DataServiceApiClient>(client =>
+{
+    // This URL uses "https+http://" to indicate HTTPS is preferred over HTTP.
+    // Learn more about service discovery scheme resolution at https://aka.ms/dotnet/sdschemes.
+    client.BaseAddress = new("https+http://dataservice");
+});
 
 var app = builder.Build();
 

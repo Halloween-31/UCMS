@@ -1,7 +1,26 @@
-﻿@page "/"
+﻿@page "/" 
+<!--
+@page "/{pageName?}"
+-->
+@using UCMS.Models.DbModels
+@using UCMS.Web.ApiClients
+@inject DataServiceApiClient dataServiceApi
+@inject NavigationManager Navigation
+@code {
+    string markdownFromDb = "<div>I am hero</div>";
 
-<PageTitle>Home</PageTitle>
+    protected override async Task OnInitializedAsync()
+    {
+        markdownFromDb = await dataServiceApi.GetPageCode(1, 1);
+    }
+}
 
-<h1>Hello, world!</h1>
+<!--
+    <PageTitle>Home</PageTitle>
 
-Welcome to your new app.
+    <h1>Hello, world!</h1>
+
+    Welcome to your new app.
+-->
+
+@((MarkupString)markdownFromDb)

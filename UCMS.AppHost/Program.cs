@@ -14,7 +14,9 @@ builder.AddProject<Projects.UCMS_Web>("webfrontend")
     .WithReference(cache)
     .WaitFor(cache)
     .WithReference(apiService)
-    .WaitFor(apiService);
+    .WaitFor(apiService)
+    .WithReference(dataService)
+    .WaitFor(dataService);
 
 builder.AddNpmApp("frontendreactvite", "../UCMS.FrontendReactVite")
     .WithReference(dataService)
