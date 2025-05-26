@@ -23,6 +23,6 @@ namespace UCMS.Models.DbModels
 
         public int UserId { get; set; }
         public User User { get; set; } = null!;
-        public ICollection<DocumentType> DocumentTypes { get; set; } = new List<DocumentType>();
+        public ICollection<DocumentType> DocumentTypes { get; set; } = [];
     }
 }

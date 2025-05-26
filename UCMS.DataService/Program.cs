@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using UCMS.DataService.Data;
 using UCMS.DataService.Extenstions;
+using UCMS.DataService.UCSMAutoMapper;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,6 +11,7 @@ builder.AddServiceDefaults();
 builder.Services.AddDbContext<UCMSDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddRepositories(); //builder.Services.AddScoped<IRepository<User>, Repository<User>>();
+builder.Services.AddAutoMapper(typeof(UCSMAutoMapper));
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

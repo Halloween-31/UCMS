@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using UCMS.DataService.Data;
 
@@ -11,9 +12,11 @@ using UCMS.DataService.Data;
 namespace UCMS.DataService.Migrations
 {
     [DbContext(typeof(UCMSDbContext))]
-    partial class UCMSDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250525223644_AddCodeModel")]
+    partial class AddCodeModel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -43,7 +46,7 @@ namespace UCMS.DataService.Migrations
                     b.HasIndex("DocumentTypeId")
                         .IsUnique();
 
-                    b.ToTable("Codes");
+                    b.ToTable("Code");
                 });
 
             modelBuilder.Entity("UCMS.Models.DbModels.Content", b =>
@@ -66,7 +69,7 @@ namespace UCMS.DataService.Migrations
 
                     b.HasIndex("DocumentTypeId");
 
-                    b.ToTable("Contents");
+                    b.ToTable("Content");
                 });
 
             modelBuilder.Entity("UCMS.Models.DbModels.ContentProperty", b =>
@@ -94,7 +97,7 @@ namespace UCMS.DataService.Migrations
 
                     b.HasIndex("PropertyId");
 
-                    b.ToTable("ContentProperties");
+                    b.ToTable("ContentProperty");
                 });
 
             modelBuilder.Entity("UCMS.Models.DbModels.DocumentType", b =>
@@ -117,7 +120,7 @@ namespace UCMS.DataService.Migrations
 
                     b.HasIndex("SiteId");
 
-                    b.ToTable("DocumentTypes");
+                    b.ToTable("DocumentType");
                 });
 
             modelBuilder.Entity("UCMS.Models.DbModels.Property", b =>
@@ -144,7 +147,7 @@ namespace UCMS.DataService.Migrations
 
                     b.HasIndex("DocumentTypeId");
 
-                    b.ToTable("Properties");
+                    b.ToTable("Property");
                 });
 
             modelBuilder.Entity("UCMS.Models.DbModels.Site", b =>

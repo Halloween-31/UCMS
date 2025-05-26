@@ -17,6 +17,8 @@ namespace UCMS.Models.DbModels
         public int SiteId { get; set; }
         public Site Site { get; set; } = null!;
 
+        public Code? Code { get; set; }
+
         public ICollection<Property> Properties { get; set; } = [];
         public ICollection<Content> Contents { get; set; } = [];
     }

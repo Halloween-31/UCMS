@@ -14,6 +14,11 @@ namespace UCMS.DataService.Data
 
         public virtual DbSet<User> Users { get; set; }
         public virtual DbSet<Site> Sites { get; set; }
+        public virtual DbSet<DocumentType> DocumentTypes { get; set; }
+        public virtual DbSet<Property> Properties { get; set; }
+        public virtual DbSet<Content> Contents { get; set; }
+        public virtual DbSet<ContentProperty> ContentProperties { get; set; }
+        public virtual DbSet<Code> Codes { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -102,6 +107,20 @@ namespace UCMS.DataService.Data
                     .WithMany(e => e.ContentProperties)
                     .HasForeignKey(e => e.ContentId)
                     .OnDelete(DeleteBehavior.ClientCascade);
+            });
+
+            modelBuilder.Entity<Code>(entity =>
+            {
+                entity.HasKey(e => e.CodeId);
+
+                entity.Property(e => e.CodeId).HasColumnName(nameof(Code.CodeId));
+                entity.Property(e => e.CodeValue);
+
+                entity.HasOne(e => e.DocumentType)
+                    .WithOne(e => e.Code)
+                    .HasForeignKey<Code>(e => e.DocumentTypeId)
+                    .IsRequired()
+                    .OnDelete(DeleteBehavior.Cascade);
             });
 
             base.OnModelCreating(modelBuilder);

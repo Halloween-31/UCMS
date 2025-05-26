@@ -32,14 +32,14 @@ namespace UCMS.DataService.Controllers.BaseController
         }
 
         [HttpPost]
-        public async Task<ActionResult<T>> Create(T entity)
+        public virtual async Task<ActionResult<T>> Create(T entity)
         {
             await _repository.AddAsync(entity);
             return CreatedAtAction(nameof(GetById), new { id = entity.Id }, entity);
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, T entity)
+        public virtual async Task<IActionResult> Update(int id, T entity)
         {
             // Ensure id matches
             if (id != entity.Id)
