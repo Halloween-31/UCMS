@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <Sdk Name="Aspire.AppHost.Sdk" Version="9.0.0" />
 
@@ -12,6 +12,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\UCMS.AIService\UCMS.AIService.csproj" />
     <ProjectReference Include="..\UCMS.ApiService\UCMS.ApiService.csproj" />
     <ProjectReference Include="..\UCMS.Web\UCMS.Web.csproj" />
     <ProjectReference Include="..\UCMS.DataService\UCMS.DataService.csproj" />

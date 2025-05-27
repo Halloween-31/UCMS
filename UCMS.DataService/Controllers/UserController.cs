@@ -4,7 +4,6 @@ using UCMS.DataService.DTOs.UserDTOs;
 using UCMS.DataService.Repositories.Interface;
 using UCMS.DataService.Repositories.Partial;
 using UCMS.Models.DbModels.SiteContentCreation;
-using static Grpc.Core.Metadata;
 
 namespace UCMS.DataService.Controllers
 {

@@ -1,5 +1,6 @@
 ﻿using System.Xml.Linq;
 using Microsoft.EntityFrameworkCore;
+using UCMS.Models.DbModels.AIConnectionModels;
 using UCMS.Models.DbModels.SiteContentCreation;
 
 // PM> Add-Migration InitialCreate -Project UCMS.DataService -StartupProject UCMS.DataService -Context UCMSDbContext
@@ -19,6 +20,8 @@ namespace UCMS.DataService.Data
         public virtual DbSet<Content> Contents { get; set; }
         public virtual DbSet<ContentProperty> ContentProperties { get; set; }
         public virtual DbSet<Code> Codes { get; set; }
+        public virtual DbSet<Chat> Chats { get; set; }
+        public virtual DbSet<Message> Messages { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -121,6 +124,27 @@ namespace UCMS.DataService.Data
                     .HasForeignKey<Code>(e => e.DocumentTypeId)
                     .IsRequired()
                     .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            modelBuilder.Entity<Chat>(entity =>
+            {
+                entity.HasKey(e => e.ChatId);
+
+                entity.Property(e => e.ChatId).HasColumnName(nameof(Chat.ChatId));
+            });
+
+            modelBuilder.Entity<Message>(entity =>
+            {
+                entity.HasKey(e => e.MessageId);
+
+                entity.Property(e => e.MessageId).HasColumnName(nameof(Message.MessageId));
+                entity.Property(e => e.UserRequest);
+                entity.Property(e => e.AIResponse);
+
+                entity.HasOne(e => e.Chat)
+                    .WithMany(e => e.Messages)
+                    .HasForeignKey(e => e.ChatId)
+                    .OnDelete(DeleteBehavior.NoAction);
             });
 
             base.OnModelCreating(modelBuilder);

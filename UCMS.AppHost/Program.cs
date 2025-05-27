@@ -9,6 +9,10 @@ var apiService = builder.AddProject<Projects.UCMS_ApiService>("apiservice")
     .WithReference(dataService)
     .WaitFor(dataService);
 
+var aiService = builder.AddProject<Projects.UCMS_AIService>("aiservice")
+    .WithReference(dataService)
+    .WaitFor(dataService);
+
 builder.AddProject<Projects.UCMS_Web>("webfrontend")
     .WithExternalHttpEndpoints()
     .WithReference(cache)
