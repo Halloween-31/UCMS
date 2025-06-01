@@ -11,6 +11,7 @@ builder.AddServiceDefaults();
 builder.Services.AddDbContext<UCMSDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddRepositories(); //builder.Services.AddScoped<IRepository<User>, Repository<User>>();
+builder.Services.AddServices();
 builder.Services.AddAutoMapper(typeof(UCSMAutoMapper));
 
 builder.Services.AddControllers();

@@ -37,11 +37,11 @@ namespace UCMS.DataService.Repositories.ModelRepository
                 .FirstOrDefaultAsync(site => site.SiteId == siteId);
         }
 
-        public async Task UpdateSiteAsync(Site site)
+        public async Task<Site?> UpdateSiteAsync(Site site)
         {
             var existingSite = await GetSiteWithAll(site.SiteId);
 
-            if (existingSite == null) return;
+            if (existingSite == null) return null;
 
             // Update scalar properties
             context.Entry(existingSite).CurrentValues.SetValues(site);
@@ -53,6 +53,8 @@ namespace UCMS.DataService.Repositories.ModelRepository
             UpdateDocumentTypes(existingSite, site.DocumentTypes);
 
             await context.SaveChangesAsync();
+
+            return site;
         }
 
         private void UpdateDocumentTypes(Site existingSite, ICollection<DocumentType> newDocumentTypes)

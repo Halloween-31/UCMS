@@ -6,14 +6,16 @@ using UCMS.DataService.Controllers.BaseController;
 using UCMS.DataService.DTOs.SiteDTOs;
 using UCMS.DataService.Repositories.Interface;
 using UCMS.DataService.Repositories.ModelRepository;
+using UCMS.DataService.Services.Interfaces;
 using UCMS.Models.DbModels.SiteContentCreation;
 
 namespace UCMS.DataService.Controllers
 {
     [Route("/[controller]")]
-    public class SiteController(IRepository<Site> repository, IMapper mapper) : BaseController<Site>(repository)
+    public class SiteController(IRepository<Site> repository, IMapper mapper, ISiteService siteService) : BaseController<Site>(repository)
     {
         private readonly IMapper _mapper = mapper;
+        private readonly ISiteService _siteService = siteService;
 
         [HttpGet("ByUserId")]
         public ActionResult<IEnumerable<Site>> GetByUserId(int userId)
@@ -113,7 +115,7 @@ namespace UCMS.DataService.Controllers
         }
 
         [HttpPut("RealUpdate/{siteId}")]
-        public async Task<IActionResult> Update(int siteId, SiteSaveDTO entity)
+        public async Task<ActionResult<Site>> Update(int siteId, SiteSaveDTO entity)
         {
             // Ensure id matches
             if (siteId != entity.SiteId)
@@ -121,8 +123,13 @@ namespace UCMS.DataService.Controllers
 
             var site = _mapper.Map<Site>(entity);
 
-            await (_repository as SiteRepository).UpdateSiteAsync(site);
-            return NoContent();
+            _siteService.UpdateContentProperties(site);
+
+            var updatedSite = await (_repository as SiteRepository).UpdateSiteAsync(site);
+            if (updatedSite == null) return BadRequest();
+
+            SiteSaveDTO siteDto = _mapper.Map<SiteSaveDTO>(updatedSite);
+            return Ok(siteDto);
         }
     }
 }
