@@ -2,8 +2,13 @@ import React, { useState, useEffect, /*useRef,*/ /*type ChangeEvent,*/ /*type Fo
 import { Navigate, useNavigate, useSearchParams } from 'react-router-dom';
 import axios from 'axios';
 import GlobalHeader from '../header/Header';
-import { makeSiteDependencies, SiteDefaultState, type Site } from '../../../models/Site';
+import { makeSiteDependencies, SiteDefaultState, type Site } from '../../../models/siteContentCreation/Site';
 import Sidebar from '../sidebar/Sidebar';
+import { ChatDefaultState, type Chat } from '../../../models/AIConnection/Chat';
+import { type Message } from '../../../models/AIConnection/Message';
+import type { Property } from '../../../models/siteContentCreation/Property';
+import { MapSiteToSiteSaveDTO, type SiteSaveDto } from '../../../models/DTOs/SiteDTOs/SiteSaveDto';
+import { toast, ToastContainer } from 'react-toastify';
 
 // --- TypeScript Interfaces ---
 
@@ -363,19 +368,31 @@ const TabsComponent: React.FC<TabsProps> = ({ activeTab, onTabChange }) => {
   );
 };
 
-interface ContentPanelProps {
+type ContentPanelProps = {
   site: Site;
-}
-const ContentPanel: React.FC<ContentPanelProps> = ({ site }) => {
-  console.log('site', site);
-  //console.log('site.documentTypes[0].contents[0]', site.documentTypes[0].contents[0]);
+  setSite: React.Dispatch<React.SetStateAction<Site>>;
+};
+const ContentPanel: React.FC<ContentPanelProps> = ({ site, setSite }) => {
+  // console.log('site', site);
+  // console.log('site.documentTypes[0].contents[0]', site.documentTypes[0].contents[0]);
 
   if (site.siteId === 0) {
     return (<div></div>);
   }
 
-  console.log('site.documentTypes[0].contents[0].contentProperties', site.documentTypes[0].contents[0].contentProperties);
-  console.log('site.documentTypes[0].contents[0].contentProperties[0].property', site.documentTypes[0].contents[0].contentProperties[0].property);
+  const contentPropertyChange = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
+    e.preventDefault();
+
+    setSite(prev => {
+      prev.documentTypes[0].contents[0].contentProperties[index].value = e.target.value;
+      return {
+        ...prev
+      };
+    });
+  };
+
+  // console.log('site.documentTypes[0].contents[0].contentProperties', site.documentTypes[0].contents[0].contentProperties);
+  // console.log('site.documentTypes[0].contents[0].contentProperties[0].property', site.documentTypes[0].contents[0].contentProperties[0].property);
   return (
     <div className="space-y-6">
       {/* Header section */
@@ -405,7 +422,9 @@ const ContentPanel: React.FC<ContentPanelProps> = ({ site }) => {
                 {site.documentTypes[0].properties.find(p => p.propertyId == contentProperty.propertyId)?.propertyName}
               </label>
               <input type="text" id="main-headline" value={contentProperty.value} 
-                className="form-input w-full p-2 border rounded-md shadow-sm text-base" />
+                className="form-input w-full p-2 border rounded-md shadow-sm text-base" 
+                onChange={(e) => { contentPropertyChange(e, index); }}
+              />
             </div>
           ))}
           {/* old main section */
@@ -500,10 +519,69 @@ const MediaPanel: React.FC<MediaPanelProps> = ({ mediaAssets }) => (
   </div>
 );
 
-interface SettingsPanelProps {
+type SettingsPanelProps = {
   site: Site;
+  setSite: React.Dispatch<React.SetStateAction<Site>>;
 }
-const SettingsPanel: React.FC<SettingsPanelProps> = ({ site }) => {
+const SettingsPanel: React.FC<SettingsPanelProps> = ({ site, setSite }) => {
+
+  const addNewSetting = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
+    e.preventDefault();
+
+    const newProperty: Property = {
+      propertyId: 0,
+      propertyName: '',
+      dataType: 'text/string',
+
+      documentTypeId: site.documentTypes[0].documentTypeId,
+      documentType: site.documentTypes[0],
+
+      contentProperties: [],
+    };
+
+    setSite(prev => {
+
+      const updatedDocumentTypes = [...prev.documentTypes];
+      const firstDocType = { ...updatedDocumentTypes[0] };
+      const updatedProperties = [...firstDocType.properties, newProperty];
+
+      firstDocType.properties = updatedProperties;
+      updatedDocumentTypes[0] = firstDocType;
+
+      return {
+        ...prev,
+        documentTypes: updatedDocumentTypes,
+      }
+    });
+  };
+
+  const propertyOnChange = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
+    e.preventDefault();
+    
+    setSite(prev => {
+      prev.documentTypes[0].properties[index].propertyName = e.target.value;
+      return {
+        ...prev
+      };
+    });
+  }
+
+  const deleteProperty = (index: number) => {
+    setSite(prev => {
+      const updatedDocumentTypes = [...prev.documentTypes];
+      const firstDocType = { ...updatedDocumentTypes[0] };
+      const updatedProperties = [...firstDocType.properties.filter((_, _index) => _index !== index )];
+
+      firstDocType.properties = updatedProperties;
+      updatedDocumentTypes[0] = firstDocType;
+
+      return {
+        ...prev,
+        documentTypes: updatedDocumentTypes,
+      }
+    });
+  }
+
   return (
     <div className="space-y-6">
       <div className="bg-gray-50 p-6 rounded-lg shadow">
@@ -511,13 +589,28 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({ site }) => {
         <p className="text-xs text-gray-500 mb-4">Configure various options for this page.</p>
         <div className="space-y-4">
           {site.documentTypes[0].properties.map((property, index) => (
-            <div key={index}>
-              <label htmlFor="seo-title" className="block text-sm font-medium text-gray-700 mb-1">{property.propertyName}</label>
-              <input type="text" id="seo-title" value={property.dataType} className="form-input w-full p-2 border rounded-md shadow-sm" />
+            <div key={index} >
+              <label htmlFor="seo-title" className="block text-sm font-medium text-gray-700 mb-1">{property.dataType}</label>
+              <div className="flex">
+                <input type="text" id="seo-title" value={property.propertyName} className="form-input w-full p-2 border rounded-md shadow-sm"
+                  onChange={(e) => { propertyOnChange(e, index) }}
+                />  
+                <button
+                  onClick={() => deleteProperty(index)}
+                  className="p-2 text-red-500 hover:text-red-700 hover:bg-red-100 rounded-md transition-colors"
+                  title={`Delete ${property.propertyName} field`}
+                >
+                  <Icon iconClass="fas fa-trash-alt" />
+                </button>
+              </div>
             </div>
           ))}
         </div>
       </div>
+      <a onClick={(e) => addNewSetting(e) } className="group flex items-center px-3 py-2 text-sm font-medium rounded-md text-indigo-600 hover:text-indigo-800 hover:bg-indigo-50 mt-4">
+        <Icon iconClass="fas fa-plus-circle" className="mr-3 w-5 text-center" />
+        Add New Setting
+      </a>
     </div>
   )
 };
@@ -535,7 +628,7 @@ type CodeEditorViewProps = {
 const CodeEditorView: React.FC<CodeEditorViewProps> = ({ codeData, onCodeChange }) => {
   const [activeCodeTab, setActiveCodeTab] = useState<ActiveCodeEditorTab>('html');
 
-  console.log('codeData.html', codeData.html);
+  // console.log('codeData.html', codeData.html);
 
   if ((codeData.html && codeData.html.length === 0)) {
     codeData.html = placeholderHTML;
@@ -544,7 +637,7 @@ const CodeEditorView: React.FC<CodeEditorViewProps> = ({ codeData, onCodeChange 
     codeData.css = placeholderCSS;
   }
 
-  console.log('codeData.html', codeData.html);
+  // console.log('codeData.html', codeData.html);
 
   return (
     <div className="space-y-6">
@@ -607,39 +700,110 @@ const AiChatButton: React.FC<AiChatButtonProps> = ({ onToggleChat }) => (
   </button>
 );
 
-interface AiChatPanelProps { isOpen: boolean; onClose: () => void; }
-const AiChatPanel: React.FC<AiChatPanelProps> = ({ isOpen, onClose }) => (
-  <div
-    className={`fixed top-16 bottom-0 right-0 bg-gray-100 border-l border-gray-300 shadow-xl z-50
-                transform transition-transform duration-300 ease-in-out
-                w-80 xl:w-96 p-4 flex flex-col
-                ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}
-  >
-    <div className="flex items-center justify-between mb-4 flex-shrink-0">
-      <h2 className="text-lg font-semibold text-gray-800">AI Assistant</h2>
-      <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
-        <Icon iconClass="fas fa-times fa-lg" />
-      </button>
-    </div>
-    <div className="flex-grow overflow-y-auto mb-4 bg-white p-3 rounded-md shadow">
-      <p className="text-sm text-gray-500">AI Chat is ready. Ask me anything about this page!</p>
-      <div className="mt-3 space-y-2 text-xs">
-        <div className="p-2 bg-indigo-50 rounded-lg self-start max-w-[85%] break-words">How can I improve SEO for this page?</div>
-        <div className="p-2 bg-gray-200 rounded-lg self-end text-right ml-auto max-w-[85%] break-words">You can start by optimizing your meta description and ensuring relevant keywords are used in the content.</div>
+type AiChatPanelProps = { 
+  userId: number,
+  isOpen: boolean; 
+  onClose: () => void; 
+}
+const AiChatPanel: React.FC<AiChatPanelProps> = ({ userId, isOpen, onClose }) => {
+
+  const [prompt, setPrompt] = useState<string>('');
+  const [chat, setChat] = useState<Chat>({...ChatDefaultState, userId: userId });
+
+  const sendPrompt = (e : React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    e.preventDefault();
+
+    const newMessage: Message = {
+      messageId: 0,
+      userRequest: prompt,
+      aiResponse: '',
+      chat: chat,
+      chatId: chat.chatId,
+    }
+
+    setChat(prev => ({
+      ...prev,
+      messages: [
+        ...prev.messages,
+        newMessage
+      ]
+    }));
+
+    if (prompt && prompt.length > 0) {
+      axios.get<any>(`aiApi/ai?prompt=${prompt}&ContentId=${1}`)
+        .then((response) => {
+          console.log('response', response);
+          console.log('aiResponse', response.data.candidates[0].content.parts[0].text);
+
+          setChat((prev) => {
+            
+            const messages = [...prev.messages];
+            const lastIndex = messages.length - 1;
+
+            if (lastIndex >= 0) {
+              messages[lastIndex] = {
+                ...messages[lastIndex],
+                aiResponse : response.data.candidates[0].content.parts[0].text,
+              }
+            }
+
+            return {
+              ...prev,
+              messages: messages,
+            };
+          });
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    }
+  }
+
+  return (
+    <div
+      className={`fixed top-16 bottom-0 right-0 bg-gray-100 border-l border-gray-300 shadow-xl z-50
+                  transform transition-transform duration-300 ease-in-out
+                  w-80 xl:w-96 p-4 flex flex-col
+                  ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}
+    >
+      <div className="flex items-center justify-between mb-4 flex-shrink-0">
+        <h2 className="text-lg font-semibold text-gray-800">AI Assistant</h2>
+        <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
+          <Icon iconClass="fas fa-times fa-lg" />
+        </button>
+      </div>
+      <div className="flex-grow overflow-y-auto mb-4 bg-white p-3 rounded-md shadow">
+        <p className="text-sm text-gray-500">AI Chat is ready. Ask me anything about this page!</p>
+        {/*
+          <div className="p-2 bg-indigo-50 rounded-lg self-start max-w-[85%] break-words">How can I improve SEO for this page?</div>
+          <div className="p-2 bg-gray-200 rounded-lg self-end text-right ml-auto max-w-[85%] break-words">You can start by optimizing your meta description and ensuring relevant keywords are used in the content.</div>
+        */}
+        <div className="mt-3 space-y-2 text-xs">
+          {chat && chat.messages.length > 0 && chat.messages.map((message, index) => (
+            <div key={index}>
+              <div className="p-2 bg-indigo-50 rounded-lg self-start max-w-[85%] break-words">{message.userRequest}</div>
+              <div className="p-2 bg-gray-200 rounded-lg self-end ml-auto max-w-[85%] break-words whitespace-pre-wrap">{message.aiResponse}</div> {/* text-right */}
+            </div>
+          ))}
+        </div>
+      </div>
+      <div className="mt-auto flex-shrink-0">
+        <textarea
+          className="form-textarea w-full p-2 border rounded-md shadow-sm text-sm"
+          rows={3}
+          placeholder="Type your message..."
+          value={prompt}
+          onChange={(e) => { setPrompt(e.target.value); } }
+        />
+        <button className="mt-2 w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-4 rounded-md text-sm font-medium"
+          onClick={(e) => { sendPrompt(e); }}
+        >
+          Send
+        </button>
       </div>
     </div>
-    <div className="mt-auto flex-shrink-0">
-      <textarea
-        className="form-textarea w-full p-2 border rounded-md shadow-sm text-sm"
-        rows={3}
-        placeholder="Type your message..."
-      />
-      <button className="mt-2 w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-4 rounded-md text-sm font-medium">
-        Send
-      </button>
-    </div>
-  </div>
-);
+  )
+};
 
 
 // --- Main App Component ---
@@ -666,28 +830,33 @@ const SitePage: React.FC = () => {
       return <Navigate to="/" replace />;
   }
   
-  const siteId = searchParams.get("siteId");
+  const siteId = Number.parseInt(searchParams.get("siteId") ?? '') ?? 0;
 
   useEffect(() => {
-    axios.get<Site>(`api/site/${siteId}/withAll`)
-      .then((response) => {
-        console.log('response.data', response.data);
-        setSite(response.data);
-      })
-      .catch((error) => {
-        console.error(error)
-        setCurrentPageData(PageDataDefault);
-        navigate(`/sites?userId=${userId}`);
-      });
+    if (siteId !== 0) {
+      axios.get<Site>(`api/site/${siteId}/withAll`)
+        .then((response) => {
+          // console.log('response.data', response.data);
+          setSite(response.data);
+        })
+        .catch((error) => {
+          console.error(error)
+          setCurrentPageData(PageDataDefault);
+          navigate(`/sites?userId=${userId}`);
+        });
+    }
   }, []);
 
   useEffect(() => {
     if(site.siteId !== 0) {
-      console.log('site before dependency changing', site);
       const siteWithD = makeSiteDependencies(site);
-      console.log('siteWithD', siteWithD);
       setSite(siteWithD);
-      console.log('site after dependency changing', site);
+      setCurrentPageData(prev => ({
+        ...prev,
+        id: site.siteId,
+        title: site.documentTypes[0]?.contents[0]?.contentName,
+        description: ''
+      }));
       setMadeDependency(true);
     }
   }, [site])
@@ -714,66 +883,23 @@ const SitePage: React.FC = () => {
   };
 
   const handleSavePage = () => {
-    console.log("Saving page:", activePageId, currentPageData);
+    // console.log("Saving page:", activePageId, currentPageData);
     // In a real app, send data to backend API
-    alert("Page data saved to console!");
-    console.log('site to save', site);
+    // alert("Page data saved to console!");
+    // console.log('site to save', site);
 
-    const objectToSave = {
-      siteId: site.siteId,
-      siteName: site.siteName,
-      domain: site.domain,
-      status: site.status,
-      lastUpdated: site.lastUpdated,
-      imageUrl: site.imageUrl,
-      imageAlt: site.imageAlt,
-      userId: site.userId,
-      documentTypes: [
-        {
-          documentTypeId: site.documentTypes[0].documentTypeId,
-          name: site.documentTypes[0].name,
-          siteId: site.documentTypes[0].siteId,
-          code: {
-            codeId: site.documentTypes[0].code.codeId,
-            codeValue: site.documentTypes[0].code.codeValue,
-            documentTypeId: site.documentTypes[0].code.documentTypeId
-          },
-          properties: [
-            {
-              propertyId: site.documentTypes[0].properties[0].propertyId,
-              propertyName: site.documentTypes[0].properties[0].propertyName,
-              dataType: site.documentTypes[0].properties[0].dataType,
-              documentTypeId: site.documentTypes[0].properties[0].documentTypeId,
-              contentProperties: [
-                {
-                  contentPropertyId: site.documentTypes[0].properties[0].contentProperties[0].contentPropertyId,
-                  value: site.documentTypes[0].properties[0].contentProperties[0].value,
-                  propertyId: site.documentTypes[0].properties[0].contentProperties[0].propertyId,
-                  contentId: site.documentTypes[0].properties[0].contentProperties[0].contentId
-                }
-              ]
-            }
-          ],
-          contents: [
-            {
-              contentId: site.documentTypes[0].contents[0].contentId,
-              contentName: site.documentTypes[0].contents[0].contentName,
-              documentTypeId: site.documentTypes[0].contents[0].documentTypeId,
-              contentProperties: [
-                {
-                  contentPropertyId: site.documentTypes[0].contents[0].contentProperties[0].contentPropertyId,
-                  value: site.documentTypes[0].contents[0].contentProperties[0].value,
-                  propertyId: site.documentTypes[0].contents[0].contentProperties[0].propertyId,
-                  contentId: site.documentTypes[0].contents[0].contentProperties[0].contentId
-                }
-              ]
-            }
-          ]
-        }
-      ]
-    };
-    console.log('object to save', objectToSave);
-    axios.put<any>(`api/Site/RealUpdate/${site.siteId}`, objectToSave);
+    const _objectToSave: SiteSaveDto = MapSiteToSiteSaveDTO(site);
+    // console.log('object to save', _objectToSave);
+    axios.put<any>(`api/Site/RealUpdate/${site.siteId}`, _objectToSave)
+      .then((response) => {
+        console.log('response', response.data);
+        setSite(response.data);
+        toast.success("Data saved successfully!");
+      })
+      .catch((error) => {
+        console.error(error);
+        toast.error("Failed to save data");
+      });
   };
 
   /*const handleContentDataChange = (field: keyof ContentData, value: string) => {
@@ -849,9 +975,21 @@ const SitePage: React.FC = () => {
         <GlobalHeader />
         <div className="flex flex-1 overflow-hidden">
           <Sidebar
-            pages={[]} // initialPages
+            pages={site.documentTypes[0]?.contents.map((content) => {
+              return {
+                id: content.contentId,
+                name: content.contentName,
+                icon: 'fas fa-home'
+              }
+            })} // initialPages
             mediaItems={[]} // initialMediaLinks
-            settingItems={[]}
+            settingItems={site.documentTypes.map(doctype => {
+              return {
+                id: doctype.documentTypeId,
+                name: doctype.name,
+                icon: 'fas fa-info-circle',
+              }
+            })}
             activePageId={activePageId}
             onSelectPage={handlePageSelect}
             selectedLanguage={selectedLanguage}
@@ -870,9 +1008,9 @@ const SitePage: React.FC = () => {
               <>
                 <TabsComponent activeTab={activeVisualTab} onTabChange={setActiveVisualTab} />
                 <div id="tab-panels">
-                  {activeVisualTab === 'content' && site.siteId !== 0 && madeDependency && <ContentPanel site={site} /> }
+                  {activeVisualTab === 'content' && site.siteId !== 0 && madeDependency && <ContentPanel site={site} setSite={setSite} /> }
                   {activeVisualTab === 'media' && <MediaPanel mediaAssets={currentPageData.media} />}
-                  {activeVisualTab === 'settings' && site.siteId !== 0 && madeDependency && <SettingsPanel site={site} />}
+                  {activeVisualTab === 'settings' && site.siteId !== 0 && madeDependency && <SettingsPanel site={site} setSite={setSite} />}
                 </div>
               </>
             ) : (
@@ -912,7 +1050,10 @@ const SitePage: React.FC = () => {
 
           {/* AI Chat Components - Rendered outside main scroll, but within the flex container for layout context */}
           {!isChatOpen && <AiChatButton onToggleChat={toggleChatPanel} />}
-          <AiChatPanel isOpen={isChatOpen} onClose={toggleChatPanel} />
+          {site.siteId !== 0 && madeDependency && <AiChatPanel isOpen={isChatOpen} onClose={toggleChatPanel} userId={site.userId} />}
+
+
+          <ToastContainer />
         </div>
       </div>
     </>

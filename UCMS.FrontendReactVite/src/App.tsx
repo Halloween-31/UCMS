@@ -10,6 +10,8 @@ import SitePage from './pages/sites/site/Site';
 import Settings from './pages/sites/siteSettings/SiteSettings';
 import TestPage from './pages/testingPage/TestPage';
 import TestPageAI from './pages/testingPage/TestPageAI';
+import TestAI from './pages/testingPage/TestAI';
+import TestPageDeleteSettings from './pages/testingPage/TtestPageDeleteSettings';
 
 function App() {
   return (
@@ -26,6 +28,8 @@ function App() {
           <Route path="about" element={<About />} />
           <Route path='test' element={<TestPage />} />
           <Route path='testAI' element={<TestPageAI />} />
+          <Route path='ai' element={<TestAI />} />
+          <Route path='testPageDeleteSettings' element={<TestPageDeleteSettings /> } />
         </Routes>
       </BrowserRouter>
     </React.StrictMode>

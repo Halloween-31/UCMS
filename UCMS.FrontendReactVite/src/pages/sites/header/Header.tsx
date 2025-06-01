@@ -1,4 +1,4 @@
-import { Navigate, useSearchParams } from "react-router-dom";
+import { Navigate, useLocation, useSearchParams } from "react-router-dom";
 import { Icon } from "../site/Site";
 
 const GlobalHeader: React.FC = () => {
@@ -10,6 +10,11 @@ const GlobalHeader: React.FC = () => {
   }
   const siteId = searchParams.get("siteId");
 
+  const activeClassNames = `bg-indigo-100 text-indigo-700 px-3 py-2 rounded-md text-sm font-medium" aria-current="page`;
+  const normalClassNames = `text-gray-500 hover:bg-gray-200 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium`;
+
+  const location = useLocation();
+
   return(
     <header className="bg-white shadow-md h-16 flex items-center px-6 flex-shrink-0 z-10">
       <div className="flex items-center">
@@ -18,10 +23,8 @@ const GlobalHeader: React.FC = () => {
       </div>
       <div className="hidden md:block">
           <div className="ml-10 flex items-baseline space-x-4">
-              <a href="#" className="bg-indigo-100 text-indigo-700 px-3 py-2 rounded-md text-sm font-medium" aria-current="page">My Sites</a>
-              <a href="#" className="text-gray-500 hover:bg-gray-200 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">Analytics</a>
-              <a href={`/settings?userId=${userId}&siteId=${siteId}`} className="text-gray-500 hover:bg-gray-200 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">Settings</a>
-              <a href="#" className="text-gray-500 hover:bg-gray-200 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">Help</a>
+              <a href={`/site?userId=${userId}&siteId=${siteId}`} className={location.pathname === '/site' ? activeClassNames : normalClassNames}>My Sites</a>
+              <a href={`/settings?userId=${userId}&siteId=${siteId}`} className={location.pathname === '/settings' ? activeClassNames : normalClassNames}>Settings</a>
           </div>
       </div>
       <div className="ml-auto flex items-center space-x-4">

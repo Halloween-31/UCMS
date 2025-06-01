@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 // import { type DocumentType } from "../../../models/DocumentType";
-import { SiteDefaultState, type Site } from "../../../models/Site";
+import { SiteDefaultState, type Site } from "../../../models/siteContentCreation/Site";
 import { Navigate, useSearchParams } from "react-router-dom";
 import axios from "axios";
 import GlobalHeader from "../header/Header";

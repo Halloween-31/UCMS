@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { UserDefaultState, type User } from "../../models/User";
+import { UserDefaultState, type User } from "../../models/siteContentCreation/User";
 import { nameof } from "../../common/nameof";
 import axios from "axios";
 

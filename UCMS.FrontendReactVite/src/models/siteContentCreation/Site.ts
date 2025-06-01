@@ -1,5 +1,5 @@
 import type { DocumentType } from "./DocumentType";
-import type { User } from "./User";
+import { UserDefaultState, type User } from "./User";
 
 export interface Site {
     siteId: number;
@@ -12,7 +12,7 @@ export interface Site {
     documentTypes : DocumentType[];
 
     userId: number,
-    user: User | null,
+    user: User,
 };
 
 export const SiteDefaultState: Site = {
@@ -25,7 +25,7 @@ export const SiteDefaultState: Site = {
     imageAlt: '',
     documentTypes: [],
     userId: 0,
-    user: null
+    user: UserDefaultState,
 };
 
 export function makeSiteDependencies(site: Site) : Site {

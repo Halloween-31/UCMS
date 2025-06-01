@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, type ReactNode } from 'react';
-import type { Site } from '../../models/Site';
+import type { Site } from '../../models/siteContentCreation/Site';
 import axios from 'axios';
 import { Navigate, useNavigate, useSearchParams, type NavigateFunction } from 'react-router-dom';
 
@@ -237,7 +237,7 @@ const createNewSite = (e : React.MouseEvent<HTMLButtonElement>,
     navigate: NavigateFunction,
 ) => {
     e.preventDefault();
-    navigate(`/site?userId=${userId}&siteId=-1`);
+    navigate(`/site?userId=${userId}&siteId=0`);
 };
 
 

@@ -20,8 +20,15 @@ export default defineConfig(({ mode }) => {
                   changeOrigin: true,
                   rewrite: (path) => path.replace(/^\/api/, ''),
                   secure: false,
+              },
+              '/aiApi': {
+                  target: process.env.services__aiservice__https__0 ||
+                      process.env.services__aiservice__http__0,
+                  changeOrigin: true,
+                  rewrite: (path) => path.replace(/^\/aiApi/, ''),
+                  secure: false,
               }
-          }
+          },
       },
       build: {
           outDir: 'dist',
