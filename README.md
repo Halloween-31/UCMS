@@ -102,7 +102,7 @@ Data storage:
 * **Create a site:**
   On the main page, you will see a list of all your sites, where you can create a new site by clicking on the “Create new site” button.
 
-* **Create a document type**
+* **Create a document type:**
   To create a new document type, which is a page frame, go to the “Settings” tab and click “Add new setting” and fill in all the appropriate fields. After entering all the data, click “Save page”.
 
 * **Adding a property:**
@@ -111,10 +111,10 @@ Data storage:
 * **Create a new page:**
   After creating a document type, go to the “My Site” tab. To add a new page, click “Add new page”. Select which document type will be used to create the current page and click “Confirm”. Fill in all the fields and click “Save page”.
 
-* **View the page code**
+* **View the page code:**
   Go to the “Settings” tab, where you will find the properties of the document type on which this page was created. On the top control panel, go to the “Code” tab, where you can see the code of this document type.
 
-* **Communicate with the assistant**
+* **Communicate with the assistant:**
   Click the chat icon in the lower left corner of the screen. After the chat opens, enter a request to the AI system and click “Send”. The request is sent to the AI, which will generate a page code based on the request. After receiving a response, click Apply to apply the code to the document type and page. After the code is displayed in the corresponding window, click “Save page”.
 
 * **Previewing the page:**
