@@ -1,6 +1,6 @@
 ﻿# UCMS: Content managment system with artificial intelligence
 
-## Опис проєкту
+## Project description
 
 **UCMS** - is a web application that uses modern artificial intelligence technologies to create, edit, and interact with web content.
 This application allows you to easily and quickly create web pages and manipulate the data displayed. The built-in assistant allows you to
