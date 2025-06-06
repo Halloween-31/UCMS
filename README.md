@@ -1,4 +1,153 @@
-﻿# UCMS: Система керування вмістом з використанням штучного інтелекту
+﻿# UCMS: Content managment system with artificial intelligence
+
+## Опис проєкту
+
+**UCMS** - is a web application that uses modern artificial intelligence technologies to create, edit, and interact with web content.
+This application allows you to easily and quickly create web pages and manipulate the data displayed. The built-in assistant allows you to
+quickly generate HTML and CSS code from user requests. Modern artificial intelligence models are able to analyze the context of prompts,
+understand user intentions, offer optimal solutions, and generate clean, semantically correct code based on simple instructions.
+This makes it possible to simplify development, i.e. to remove the technological barrier for non-technical users and beginners;
+to ensure a balance between ease of use and unlimited between ease of use and unlimited functional flexibility provided by artificial intelligence;
+speed up the creation process; significantly reduce the cost of development; create a unique website rather than use a template approach to development.
+
+The application provides a user interface using React and Vite, where users can:
+
+* Register and log in;
+* Create your own websites;
+* Create pages on sites;
+* Create document types that are the framework of pages;
+* Generate HTML and CSS code with the help of an AI-based assistant;
+* Generate content with the help of an assistant;
+* View the pages they have created
+
+The server side is implemented on ASP.NET Core 9.2 and contains 4 microservices:
+
+* **FrontendReactVite** (user interface);
+* **DataService** (service for interaction with the database);
+* **AISerive** (service for interaction with AI);
+* **WebFrontEnd** (service for dynamic page generation).
+
+Data storage:
+
+* **SQL Server** — relational database.
+
+---
+
+## Technology stack
+
+* **Frontend:**
+
+  * React
+  * Vite
+  * TypeScript
+
+* **Backend:**
+
+  * ASP.NET Core 9.0
+  * .NET Aspire 9.2
+  * EF Core
+
+* **Datavase:**
+
+  * SQL Server
+
+* **Infrastructure and deployment:**
+
+  * .NET Aspire (automatic settings)
+
+---
+
+## Requirements
+
+1. **Operating system:**
+
+   * Windows 10 / 11 (64-bit)
+   * Linux (64-bit)
+
+
+2. **Required software:**
+
+   * [.NET SDK 9.0](https://dotnet.microsoft.com/download)
+   * [Node.js](https://nodejs.org/) (LTS-version) and npm
+
+---
+
+## Launching the project
+
+1. Open a terminal and go to the root directory of the project:
+
+   ```bash
+   cd /UCMS.AppHost
+   ```
+
+2. Execute the command:
+
+   ```bash
+   dotnet run
+   ```
+
+3. After a successful start, open the link you see in the terminal in your browser:
+
+   ```
+   https://localhost:*****
+   ```
+
+---
+
+## Quick start: basic functions
+
+* **Registration and login:**
+  Open the application in a browser → “Sign Up” → enter email/password → “Sign Up”.
+
+* **Create a site:**
+  On the main page, you will see a list of all your sites, where you can create a new site by clicking on the “Create new site” button.
+
+* **Create a document type**
+  To create a new document type, which is a page frame, go to the “Settings” tab and click “Add new setting” and fill in all the appropriate fields. After entering all the data, click “Save page”.
+
+* **Adding a property:**
+  To add a new document type property, click “Add new property”.
+
+* **Create a new page:**
+  After creating a document type, go to the “My Site” tab. To add a new page, click “Add new page”. Select which document type will be used to create the current page and click “Confirm”. Fill in all the fields and click “Save page”.
+
+* **View the page code**
+  Go to the “Settings” tab, where you will find the properties of the document type on which this page was created. On the top control panel, go to the “Code” tab, where you can see the code of this document type.
+
+* **Communicate with the assistant**
+  Click the chat icon in the lower left corner of the screen. After the chat opens, enter a request to the AI system and click “Send”. The request is sent to the AI, which will generate a page code based on the request. After receiving a response, click Apply to apply the code to the document type and page. After the code is displayed in the corresponding window, click “Save page”.
+
+* **Previewing the page:**
+  Now the page properties and code are saved. In the control panel, click the “View” button to go to the generated page.
+
+---
+
+## Debugging and diagnostics
+
+* If you encounter any errors when launching the app, open the Aspire Dashboard, review the logs, and look for error messages.
+
+* Check if SQL Server is working
+
+* If the frontend does not start:
+
+  1. Check the versions of Node.js and npm:
+
+     ```bash
+     node --version
+     npm --version
+     ```
+  2. Delete directory `src/UCMS.FrontendReactVite/node_modules` and execute:
+
+     ```bash
+     npm install
+     npm run dev
+     ```
+
+---
+
+
+
+# UCMS: Система керування вмістом з використанням штучного інтелекту
 
 ## Опис проєкту
 
